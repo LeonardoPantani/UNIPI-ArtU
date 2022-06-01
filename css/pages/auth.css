@@ -1,0 +1,35 @@
+#auth_grid_container {
+    display: grid;
+    grid-template-areas:
+    'welcome hello'
+    'empty empty'
+    'motto motto';
+    grid-template-rows: 1fr 1fr 1fr;
+    padding: 3em;
+    border-radius: 10px;
+
+
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    transition: background-image 1s linear;
+}
+
+#auth_grid_container > div {
+    text-align: center;
+
+    -webkit-text-stroke: 1px black;
+
+    white-space: normal;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.auth_grid_item_welcome {
+    font-size: 4em;
+}
+
+.auth_grid_item_motto {
+    font-size: 2em;
+    font-style: italic;
+}

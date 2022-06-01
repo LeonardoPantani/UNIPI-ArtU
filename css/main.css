@@ -1,0 +1,311 @@
+:root {
+    --primary: #006400;
+    --primary_variant: #228b22;
+    --secondary: #c8ad7f;
+    --secondary_variant: #90633e;
+    --warning: #f7b400;
+    --error: #e90309;
+    --info: #4d98d9;
+    --important: #d66367;
+
+    --onprimary: #ffffff;
+    --onsecondary: #000000;
+    --onerror: #ffffff;
+    --onwarning: #000000;
+    --oninfo: #ffffff;
+    --onimportant: #ffffff;
+
+    --link: #f7b400;
+}
+
+
+html,
+body {
+    background-color: #ffffff;
+    font-family: Arial, Helvetica, sans-serif;
+    margin: 0;
+    height: 100%;
+    background-image: url("../media/background.png");
+    background-repeat: no-repeat;
+    background-size: auto;
+}
+
+hr {
+    height: 1px;
+    background-color: #ffffff;
+    border: none;
+}
+
+a {
+    text-decoration: none;
+    font-style: italic;
+    color: var(--link);
+}
+
+.main_content {
+    margin: 8px;
+}
+
+.invisible {
+    visibility: hidden;
+}
+
+.gone {
+    display: none;
+}
+
+.lowercase {
+    text-transform: lowercase;
+}
+
+.uppercase {
+    text-transform: uppercase;
+}
+
+.bold {
+    font-weight: bold;
+}
+
+.itemalign_start {
+    align-items: flex-start !important
+}
+
+.itemalign_end {
+    align-items: flex-end !important
+}
+
+.textalign_start {
+    text-align: start !important
+}
+
+.textalign_center {
+    text-align: center !important
+}
+
+.textalign_end {
+    text-align: end !important
+}
+
+.align_center {
+    margin: 0 auto;
+}
+
+/* colori testo */
+.color_primary {
+    color: var(--primary)
+}
+
+.color_primary_variant {
+    color: var(--primary_variant)
+}
+
+.color_secondary {
+    color: var(--secondary);
+}
+
+.color_secondary_variant {
+    color: var(--secondary_variant)
+}
+
+.color_warning {
+    color: var(--warning)
+}
+
+.color_error {
+    color: var(--error)
+}
+
+.color_info {
+    color: var(--info)
+}
+
+.color_important {
+    color: var(--important)
+}
+
+.color_on_primary {
+    color: var(--onprimary)
+}
+
+.color_on_secondary {
+    color: var(--onsecondary)
+}
+
+.color_on_warning {
+    color: var(--onwarning)
+}
+
+.color_on_error {
+    color: var(--onerror)
+}
+
+.color_on_info {
+    color: var(--oninfo)
+}
+
+.color_on_important {
+    color: var(--onimportant)
+}
+
+/* colori background */
+.bgcolor_primary {
+    background-color: var(--primary);
+}
+
+.bgcolor_primary_variant {
+    background-color: var(--primary_variant);
+}
+
+.bgcolor_secondary {
+    background-color: var(--secondary);
+}
+
+.bgcolor_secondary_variant {
+    background-color: var(--secondary_variant);
+}
+
+.bgcolor_warning {
+    background-color: var(--warning);
+}
+
+.bgcolor_error {
+    background-color: var(--error);
+}
+
+.bgcolor_info {
+    background-color: var(--info)
+}
+
+.bgcolor_important {
+    background-color: var(--important)
+}
+
+/* -------------------------- */
+.flex_container {
+    display: flex;
+    justify-content: center;
+    border-radius: 10px;
+}
+
+.flex_item {
+    text-align: center;
+    border-radius: 10px;
+    padding: 8px;
+    margin: 0.5em;
+
+    min-width: 0;
+}
+
+.flex_item * {
+    white-space: normal;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.flex_item_newline {
+    width: 100%;
+}
+
+.width_50 {
+    width: 50%;
+}
+
+.flexratio_20 {
+    flex: 2 1 0;
+}
+
+.flexratio_30 {
+    flex: 3 1 0;
+}
+
+.flexratio_40 {
+    flex: 4 1 0;
+}
+
+.flexratio_50 {
+    flex: 1 1 0;
+}
+
+.flexratio_60 {
+    flex: 6 1 0;
+}
+
+.flexratio_70 {
+    flex: 7 1 0;
+}
+
+.flexratio_80 {
+    flex: 8 1 0;
+}
+
+input,
+button {
+    margin: 5px;
+    padding: 12px;
+}
+
+input[type=text],
+input[type=email],
+input[type=password] {
+    width: 50%;
+    border-radius: 10px;
+}
+
+input[type=submit] {
+    width: 30%;
+}
+
+.avatar {
+    border-radius: 50%;
+    background-position: center;
+    background-size: cover;
+}
+
+.avatar_big {
+    width: 130px;
+    height: 130px;
+}
+
+.avatar_small {
+    width: 40px;
+    height: 40px;
+}
+
+#avatar_edit {
+    filter: none;
+}
+
+#avatar_edit:hover {
+    filter: grayscale(100%);
+    cursor: pointer;
+}
+
+#avatar_main {
+    position: relative;
+    display: inline-block;
+}
+
+#avatar_overlay {
+    position: absolute;
+    right: 0;
+    z-index: 5;
+}
+
+.button {
+    border:none;
+    margin:0;
+    cursor: pointer;
+    border-radius: 5px;
+    filter: grayscale(0%);
+}
+
+.button:hover {
+    filter: grayscale(75%);
+    transition: all 0.2s ease;
+}
+
+.button:disabled {
+    opacity: 0.75;
+    filter: grayscale(100%);
+    cursor: not-allowed;
+}
