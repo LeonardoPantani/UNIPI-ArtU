@@ -7,6 +7,7 @@
     <meta name="keywords" content="<?php echo $tags; ?>">
     <meta name="author" content="Leonardo Pantani">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8"/>
     <link rel="icon" type="image/x-icon" href="<?php echo $folder_media; ?>/favicon.ico">
 
     <link rel="stylesheet" href="<?php echo $folder_css; ?>/main.css">

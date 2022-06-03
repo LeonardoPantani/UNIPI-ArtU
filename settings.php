@@ -7,8 +7,7 @@ require_once($folder_include . "/functions.php");
 require_once($folder_include . "/dbconn.php");
 kickGuestUser();
 // da qui in poi viene aggiunto output alla pagina HTML...
-require_once($folder_include . "/head.php");
-?>
+require_once($folder_include . "/head.php"); ?>
 <link rel="stylesheet" href="<?php echo $folder_css; ?>/pages/settings.css">
 <script src="<?php echo $folder_scripts; ?>/settings.js"></script>
 <?php
@@ -27,7 +26,7 @@ require_once($folder_include . "/navbar.php");
                         <div id="avatar_overlay" class="color_on_primary invisible">
                             <button id="avatar_deletebutton" class="button bgcolor_secondary color_on_secondary" type="button">Elimina</button>
                         </div>
-                        <img id="avatar_edit" class="avatar avatar_big" src="<?php echo "./" . $folder_avatars . "/" . $avataruri; ?>" title="Clicca per cambiare"  alt="Immagine profilo"/>
+                        <img id="avatar_edit" class="avatar avatar_big" src="<?php echo "./" . $folder_avatars . "/" . $avataruri; ?>" title="Cliccate per cambiare"  alt="Immagine profilo"/>
                     </div>
                     <div id="chngimg_div" class="gone">
                         <form id="chngimg_form" enctype="multipart/form-data" action="./<?php echo $folder_backend; ?>/chngimg.php" method="POST">
@@ -38,6 +37,14 @@ require_once($folder_include . "/navbar.php");
                 </div>
                 <div class="flex_item flexratio_60 color_on_primary textalign_start bold">
                     <h1>Che piacere rivedervi, <span class="color_info"><?php echo $username; ?></span>!</h1>
+                    <p>
+                    <?php
+                        $pendingfriendrequests = getNumPendingFriendRequests($id);
+                        if($pendingfriendrequests > 0) {
+                            ?><a href="friendrequests.php">Avete <?php echo $pendingfriendrequests; ?> richiesta(e) in attesa. Cliccate per vedere</a><?php
+                        }
+                    ?>
+                    </p>
                 </div>
             </div>
             <hr>

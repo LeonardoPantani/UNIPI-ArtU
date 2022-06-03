@@ -1,7 +1,7 @@
 <?php
 $title = "Esplora";
 $description = "Qui puoi vedere foto, video, disegni e altre creazioni degli utenti.";
-$tags = "photos, videos, drawings, music";
+$tags = "photo, video, drawing, music";
 require_once("config/config.php");
 require_once($folder_include . "/functions.php");
 require_once($folder_include . "/dbconn.php");
@@ -12,7 +12,7 @@ require_once($folder_include . "/navbar.php");
 
 <div class="main_content">
     <div class="flex_container">
-        <div class="flex_item width_50 bgcolor_primary color_on_primary">
+        <div class="flex_item bgcolor_primary color_on_primary">
             <h1>Esplora</h1>
             <p><?php echo $loremipsum; ?></p>
         </div>

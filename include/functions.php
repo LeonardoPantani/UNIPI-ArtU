@@ -108,9 +108,104 @@ function getUserDataByUsername($username): bool|array|null
     return $esito->fetch_assoc();
 }
 
+/**
+ * @param contentid id del contenuto di un utente
+ * @return bool|array|null l'array contenente i dati del content se l'id esiste, null se non corrisponde niente, falso in caso di errore della query
+ */
+function getUserContentById($contentid): bool|array|null
+{
+    global $dbconn, $table_usercontent, $table_users;
+
+    $stmt = $dbconn->prepare("SELECT $table_usercontent.*, $table_users.username FROM $table_usercontent JOIN $table_users ON $table_usercontent.userid = $table_users.id WHERE $table_usercontent.id = ?");
+    $stmt->bind_param("i", $contentid);
+    $stmt->execute();
+    $esito = $stmt->get_result();
+
+    return $esito->fetch_assoc();
+}
+
+function getNumPendingFriendRequests($userid) {
+    global $dbconn, $table_friendrequests;
+
+    $stmt = $dbconn->prepare("SELECT * FROM $table_friendrequests WHERE useridb = ? AND status = 'pending'");
+    $stmt->bind_param("i", $userid);
+    $stmt->execute();
+    $esito = $stmt->get_result();
+
+    return $esito->num_rows;
+}
+
+/**
+ * @param friendreqid id della richiesta di amicizia
+ * @return bool|array|null l'array contenente i dati della richiesta di amicizia se l'id esiste, null se non corrisponde niente, falso in caso di errore della query
+ */
+function getFriendRequestById($friendreqid): bool|array|null
+{
+    global $dbconn, $table_friendrequests;
+
+    $stmt = $dbconn->prepare("SELECT * FROM $table_friendrequests WHERE id = ?");
+    $stmt->bind_param("i", $friendreqid);
+    $stmt->execute();
+    $esito = $stmt->get_result();
+
+    return $esito->fetch_assoc();
+}
+
+/**
+ * @param id l'id dell'utente di cui voglio sapere se sono amico
+ * @return boolean vero se sono amico dell'utente con quell'id, falso altrimenti
+ */
+function amIFriendOf($userid): bool
+{
+    global $dbconn, $table_friends;
+
+    $stmt = $dbconn->prepare("SELECT * FROM $table_friends WHERE userida = ? OR useridb = ?");
+    $stmt->bind_param("ii", $userid, $userid);
+    $stmt->execute();
+    $esito = $stmt->get_result();
+
+    if($esito->num_rows == 0) {
+        return false;
+    } else {
+        return true;
+    }
+}
+
+/**
+ * @param id l'id dell'utente di cui voglio sapere info sulla richiesta di amicizia
+ * @return int -1 se non è stata mai inviata, 0 se è in attesa, 1 se è stata accettata, 2 se è stata rifiutata
+ */
+function checkFriendRequest($userid): int
+{
+    global $dbconn, $table_friendrequests;
+
+    $stmt = $dbconn->prepare("SELECT * FROM $table_friendrequests WHERE useridb = ?");
+    $stmt->bind_param("i", $userid);
+    $stmt->execute();
+    $esito = $stmt->get_result();
+
+    if($esito->num_rows == 0) {
+        return -1;
+    } else {
+        $dati = $esito->fetch_assoc();
+        if($dati["status"] === "pending") {
+            return 0;
+        } else if($dati["status"] == "accepted") {
+            return 1;
+        } else {
+            return 2;
+        }
+    }
+}
+
 function getFormattedDate($unixtime): string
 {
     return date("d/m/Y", $unixtime);
+}
+
+function getFormattedDateTime($unixtime): string
+{
+    return date("d/m/Y H:i", $unixtime);
 }
 
 

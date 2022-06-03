@@ -40,7 +40,7 @@ require_once($folder_include . "/head.php"); ?>
                 <input type="password" name="repeatpassword" placeholder="Ripeti password">
                 <br><br>
                 <input type="submit" value="Registrazione" class="button bgcolor_secondary color_on_secondary">
-                <p><small>Registrandoti accetti l'<a target="_blank" href="<?php echo "./" . $folder_media . "/privacypolicy.txt"; ?>">informativa sulla privacy</a> di <b><?php echo $service_name; ?></b>.</small></p>
+                <p><small>Registrandovi accettate l'<a target="_blank" href="<?php echo "./privacypolicy.php"; ?>">informativa sulla privacy</a> di <b><?php echo $service_name; ?></b>.</small></p>
             </form>
         </div>
         <div class="flex_item flexratio_50 bgcolor_primary color_on_primary">

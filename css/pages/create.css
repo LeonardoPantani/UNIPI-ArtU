@@ -1,0 +1,31 @@
+.step_item {
+    text-align: start;
+}
+
+.step_visibility {
+    opacity: 0;
+}
+
+/* pulsante upload */
+.content_file {
+    display: none;
+}
+.content_file_upload {
+    border: 1px solid #ccc;
+    display: inline-block;
+    padding: 6px 12px;
+    cursor: pointer;
+}
+
+.test-control-wrapper {
+    display: flex;
+    align-items: center;
+}
+
+.test-control {
+    margin-left: 5px;
+}
+
+.flexitem_arrow_next {
+    align-self: flex-start;
+}

@@ -5,7 +5,9 @@ require_once("config/config.php");
 require_once($folder_include . "/dbconn.php");
 require_once($folder_include . "/functions.php");
 // da qui in poi viene aggiunto output alla pagina HTML...
-require_once($folder_include . "/head.php");
+require_once($folder_include . "/head.php"); ?>
+<script src="<?php echo $folder_scripts; ?>/page.js"></script>
+<?php
 require_once($folder_include . "/navbar.php");
 
 if(!isset($_GET["username"]) || $_GET["username"] == "") {
@@ -27,14 +29,6 @@ if(!isset($_GET["username"]) || $_GET["username"] == "") {
                 <br>
                 <a href="./">🔙 Torna alla homepage</a>
             </div>
-        <?php } else if($username != $pageuserdata["username"] && $pageuserdata["visibility"] == 0) { ?>
-            <div class="flex_item width_50 bgcolor_warning color_on_warning">
-                <p>
-                    <b><?php echo $pageuserdata["username"]; ?></b> non consente la visualizzazione della propria pagina.
-                </p>
-                <br>
-                <a href="./">🔙 Torna alla homepage</a>
-            </div>
         <?php } else { ?>
             <div class="flex_item width_50 bgcolor_primary color_on_primary">
                 <div class="flex_container">
@@ -44,15 +38,22 @@ if(!isset($_GET["username"]) || $_GET["username"] == "") {
                     <div class="flex_item width_50 bgcolor_primary color_on_primary textalign_start">
                         <h1><?php echo $pageuserdata["username"]; ?></h1>
 
-                        <?php if($username == $pageuserdata["username"] && $visibility) { ?>
-                            <p class="color_important">Nota: avete impostato la visibilità del profilo su <b>privata</b>, pertanto nessuno eccetto voi può vedere questa pagina.</p>
-                        <?php } else { ?>
+                        <?php if($username == $pageuserdata["username"]) { ?>
                             <p>Così è come vedranno gli altri utenti la pagina del vostro profilo.</p>
+                            <?php if($visibility) { ?>
+                            <p class="color_important">Nota: avete impostato la visibilità del profilo su <b>privata</b>, pertanto nessuno eccetto voi può vedere questa pagina.</p>
+                            <?php } ?>
+                        <?php } else { ?>
+                            <a id="sndfrndreq" href="./<?php echo $folder_backend; ?>/sndfrndreq.php?userid=<?php echo $pageuserdata['id']; ?>">Invia richiesta di amicizia</a>
                         <?php } ?>
                     </div>
                 </div>
                 <hr>
-                <h1>Altro testo...</h1>
+                <?php if($username != $pageuserdata["username"] && $pageuserdata["visibility"] == 0) { ?>
+                    <p>Impossibile vedere altro, <?php echo $pageuserdata["username"]; ?> non ha concesso a nessun altro di accedere la sua pagina.</p>
+                <?php } else { ?>
+                    <p>Altro testo...</p>
+                <?php } ?>
             </div>
         <?php } ?>
     </div>

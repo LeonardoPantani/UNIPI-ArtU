@@ -48,6 +48,10 @@
 }
 
 /* altro */
+#navbar_version {
+    color: lightgray;
+    font-weight: normal;
+}
 
 #navbar_datetime {
     color: lightgray;

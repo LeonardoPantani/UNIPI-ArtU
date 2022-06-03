@@ -3,12 +3,14 @@
     <div class="navbar_list bgcolor_primary color_on_primary">
         <div class="">
             <div class="navbar_left">
-                <a href="./" class="<?php if ($pagename == "index") echo "active"; ?>">Home</a>
-                <a href="./explore.php" class="<?php if ($pagename == "explore") echo "active"; ?>">Esplora</a>
-                <a href="./ideagenerator.php" class="<?php if ($pagename == "ideagenerator") echo "active"; ?>">Idea?</a>
+                <a id="navbar_index" href="./" class="<?php if ($pagename == "index") echo "active"; ?>">Home</a>
+                <a id="navbar_explore" href="./explore.php" class="<?php if ($pagename == "explore") echo "active"; ?>">Esplora</a>
+                <a id="navbar_create" href="./create.php" class="<?php if($pagename == "create") echo "active"; ?>">Crea</a>
+                <a id="navbar_idea" href="./ideagenerator.php" class="<?php if ($pagename == "ideagenerator") echo "active"; ?>">Generatore di idee</a>
             </div>
 
             <div class="navbar_right">
+                <div id="navbar_version">versione <?php echo $service_version; ?></div>
                 <div id="navbar_datetime"></div>
 
                 <?php if (isLogged()) { ?>

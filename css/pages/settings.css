@@ -1,0 +1,19 @@
+#avatar_edit {
+    filter: none;
+}
+
+#avatar_edit:hover {
+    filter: grayscale(100%);
+    cursor: pointer;
+}
+
+#avatar_main {
+    position: relative;
+    display: inline-block;
+}
+
+#avatar_overlay {
+    position: absolute;
+    right: 0;
+    z-index: 5;
+}
