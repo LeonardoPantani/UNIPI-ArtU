@@ -1,2 +1,4 @@
 usercontent/*
 include/error_log.log
+.idea
+.idea/*
