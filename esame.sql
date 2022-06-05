@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Creato il: Giu 03, 2022 alle 19:04
+-- Creato il: Giu 05, 2022 alle 17:53
 -- Versione del server: 10.4.21-MariaDB
 -- Versione PHP: 8.0.10
 
@@ -50,6 +50,18 @@ CREATE TABLE `friends` (
 -- --------------------------------------------------------
 
 --
+-- Struttura della tabella `pages`
+--
+
+CREATE TABLE `pages` (
+  `userid` int(11) NOT NULL,
+  `content` varchar(5000) NOT NULL,
+  `editDate` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
 -- Struttura della tabella `usercontent`
 --
 
@@ -57,10 +69,13 @@ CREATE TABLE `usercontent` (
   `id` int(11) NOT NULL,
   `type` varchar(15) NOT NULL,
   `creationDate` int(11) NOT NULL,
+  `title` varchar(255) NOT NULL,
   `tags` varchar(255) NOT NULL,
   `notes` varchar(350) NOT NULL,
   `private` tinyint(1) NOT NULL,
-  `userid` int(11) NOT NULL
+  `userid` int(11) NOT NULL,
+  `contentExtension` varchar(255) NOT NULL,
+  `thumbnailExtension` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -97,6 +112,12 @@ ALTER TABLE `friendrequests`
 ALTER TABLE `friends`
   ADD KEY `userida` (`userida`,`useridb`),
   ADD KEY `useridb` (`useridb`,`userida`);
+
+--
+-- Indici per le tabelle `pages`
+--
+ALTER TABLE `pages`
+  ADD PRIMARY KEY (`userid`);
 
 --
 -- Indici per le tabelle `usercontent`
@@ -143,6 +164,13 @@ ALTER TABLE `users`
 ALTER TABLE `friendrequests`
   ADD CONSTRAINT `userida` FOREIGN KEY (`userida`) REFERENCES `users` (`id`),
   ADD CONSTRAINT `useridb` FOREIGN KEY (`useridb`) REFERENCES `users` (`id`);
+
+--
+-- Limiti per la tabella `pages`
+--
+ALTER TABLE `pages`
+  ADD CONSTRAINT `userid` FOREIGN KEY (`userid`) REFERENCES `users` (`id`),
+  ADD CONSTRAINT `userid_foreign` FOREIGN KEY (`userid`) REFERENCES `users` (`id`);
 
 --
 -- Limiti per la tabella `usercontent`
