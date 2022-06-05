@@ -40,8 +40,38 @@ function validatePassword(password) {
     return true;
 }
 
+/**
+ * Invia un form via XHR all'indirizzo specificato
+ * @param actionURL url su cui inviare il form
+ * @param form il form da inviare
+ * @param onFinish(result) funzione chiamata una volta finita la richiesta
+ * @param sendingFile vero se si sta inviando un file, falso altrimenti
+ */
+function sendAjax(actionURL, form, onFinish, sendingFile) {
+    if(sendingFile) {
+        $.ajax({
+            type: "POST",
+            url: actionURL,
+            data: form ? new FormData(form[0]) : null,
+            cache: false,
+            contentType: false,
+            processData: false,
+            success: function(result) {
+                onFinish(result);
+            }
+        });
+    } else {
+        $.ajax({
+            type: "POST",
+            url: actionURL,
+            data: form ? form.serialize() : null,
+            success: function(result) {
+                onFinish(result);
+            }
+        });
+    }
+}
+
 $(function () {
     updateClock();
 });
-
-let sas = 1;

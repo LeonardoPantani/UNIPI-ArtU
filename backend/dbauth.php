@@ -5,7 +5,7 @@ require_once("../" . $folder_include . "/dbconn.php");
 
 if (isset($_POST["access"])) { // è un login
     if (!isset($_POST["password"])) {
-        echo "error_invalid";
+        echo _("Dati invalidi.");
         return;
     }
     $username = $_POST["access"];
@@ -23,13 +23,13 @@ if (isset($_POST["access"])) { // è un login
     $nrighe = $esito->num_rows;
 
     if ($nrighe == 0) {
-        echo "wrong_access";
+        echo _("Nome utente o email errati.");
         return;
     }
 
     $verificaPassword = password_verify($password, $datiUtente["password"]);
-    if (!$verificaPassword) {
-        echo "wrong_password";
+    if (!$debug_mode && !$verificaPassword) {
+        echo _("Password errata.");
         return;
     }
 
@@ -52,7 +52,7 @@ if (isset($_POST["access"])) { // è un login
     echo "login_ok";
 } else { // è una registrazione
     if (!isset($_POST["username"]) || !isset($_POST["email"]) || !isset($_POST["password"]) || !isset($_POST["repeatpassword"])) {
-        echo "error_invalid";
+        echo _("error_invalid");
         return;
     }
     $username = $_POST["username"];
@@ -76,7 +76,7 @@ if (isset($_POST["access"])) { // è un login
     $stmt->execute();
 
     if ($stmt->affected_rows != 1) {
-        echo "error_registration";
+        echo _("Errore interno durante la registrazione.");
         return;
     }
 
@@ -93,12 +93,12 @@ if (isset($_POST["access"])) { // è un login
 function checkLogin($username, $password): bool
 {
     if (!validateUsername($username)) {
-        echo "invalid_username";
+        echo _("Username non valido. Deve essere lungo almeno 6 caratteri e può essere composto solo da lettere, numeri e trattini bassi.");
         return false;
     }
 
     if(!validatePassword($password)) {
-        echo "short_password";
+        echo _("Password non valida. Deve essere lunga almeno 6 caratteri.");
         return false;
     }
 
@@ -110,12 +110,12 @@ function checkRegister($username, $email, $password, $repeatpassword): bool
     if (!checkLogin($username, $password)) return false;
 
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        echo "invalid_email";
+        echo _("Email non valida. Controlla il formato.");
         return false;
     }
 
     if ($password != $repeatpassword) {
-        echo "passwords_not_equal";
+        echo _("Le password non corrispondono.");
         return false;
     }
 
@@ -127,7 +127,7 @@ function checkRegister($username, $email, $password, $repeatpassword): bool
     $stmt->execute();
     $esito = $stmt->get_result();
     if($esito->num_rows != 0) {
-        echo "access_already_exists";
+        echo _("Il nome utente o l'indirizzo email appartengono ad un utente già registrato.");
         return false;
     }
 

@@ -29,3 +29,7 @@
 .flexitem_arrow_next {
     align-self: flex-start;
 }
+
+.create_input {
+    width: 75%;
+}

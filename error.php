@@ -26,13 +26,13 @@ if (isset($_GET["code"])) {
 }
 ?>
 
-<div class="main_content">
+<main class="main_content">
     <div class="flex_container">
         <div class="flex_container_item bgcolor_secondary color_on_secondary">
             <h3>Si è verificato un errore:</h3>
             <p><?php echo $emsg; ?></p>
         </div>
     </div>
-</div>
+</main>
 
 <?php require_once($folder_include . "/footer.php"); ?>

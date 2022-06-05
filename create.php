@@ -1,5 +1,5 @@
 <?php
-$title = "Crea";
+$title = "➕ Crea contenuto";
 $description = "Qui puoi creare un contenuto e mostrarlo a tutta la community.";
 $tags = "create, ideas, photo, video, drawing, music";
 require_once("config/config.php");
@@ -14,15 +14,18 @@ require_once($folder_include . "/head.php"); ?>
 require_once($folder_include . "/navbar.php");
 ?>
 
-<div class="main_content">
+<main class="main_content">
     <p id="backend" class="gone"><?php echo $folder_backend; ?></p>
+    <p id="titlemaxlength" class="gone"><?php echo $content_title_maxlength; ?></p>
+    <p id="titleregex" class="gone"><?php echo $content_title_regex; ?></p>
     <p id="tagmaxlength" class="gone"><?php echo $content_tag_maxlength; ?></p>
     <p id="tagmaxnumber" class="gone"><?php echo $content_tag_maxnumber; ?></p>
+    <p id="tagregex" class="gone"><?php echo $content_tag_regex; ?></p>
 
     <form id="uploadcontent_form" enctype="multipart/form-data" action="./<?php echo $folder_backend; ?>/uploadcontent.php" method="POST">
         <div id="intro" class="flex_container">
             <div class="flex_item width_50 bgcolor_primary color_on_primary">
-                <h1>Inserite un contenuto</h1>
+                <h1><?php echo $title; ?></h1>
                 <cite><?php echo $service_motto; ?></cite>
                 <br><i class="arrow down arrow_small"></i>
             </div>
@@ -33,8 +36,8 @@ require_once($folder_include . "/navbar.php");
                 <div class="flex_item step_item">
                     <h2>Passaggio 1</h2>
                     <h4>Quale categoria esprime meglio ciò che state creando?</h4>
-                    <select name="content_category" id="content_category">
-                        <option value="default">Specificare un categoria...</option>
+                    <select class="create_input" name="content_category" id="content_category" required>
+                        <option value="">Specificare un categoria...</option>
                         <option value="photo">Foto</option>
                         <option value="video">Video</option>
                         <option value="drawing">Dipinto</option>
@@ -42,6 +45,11 @@ require_once($folder_include . "/navbar.php");
                         <option value="text">Testo</option>
                         <option value="poetry">Poesia</option>
                     </select>
+
+                    <h4>Titolo</h4>
+                    <div class="test">
+                        <input class="create_input test-control" id="content_title" name="content_title" placeholder="Lunghezza massima: <?php echo $content_title_maxlength; ?> caratteri" required /> <span id="content_title_result"></span>
+                    </div>
                 </div>
                 <div class="flex_item flexitem_arrow_next">
                     <i class="arrow right arrow_small"></i>
@@ -56,11 +64,11 @@ require_once($folder_include . "/navbar.php");
                     <label id="content_label_file" for="content_file" class="content_file_upload">
                         ☁&nbsp;Carica risorsa
                     </label>
-                    <input type="file" id="content_file" name="content_file" class="content_file">
+                    <input type="file" id="content_file" name="content_file" class="content_file" required>
 
                     <p>Tipi di file accettati: <code id="accepted_types"></code></p>
 
-                    <h4>Vorreste specificare una miniatura visibile agli utenti prima che questi clicchino sul contenuto?</h4>
+                    <h4>Specificate una miniatura per il contenuto appena creato.</h4>
                     <label id="content_label_thumbnail" for="content_thumbnail" class="content_file_upload">
                         ☁&nbsp;Carica miniatura
                     </label>
@@ -78,10 +86,10 @@ require_once($folder_include . "/navbar.php");
                     <h2>Passaggio 3</h2>
                     <h4>Tags</h4>
                     <div class="test">
-                        <input class="test-control" type="text" id="content_tags" name="content_tags" placeholder="tag1, tag2, tag3, ..."  maxlength="<?php echo $content_note_maxlength; ?>" /> <span id="content_tags_result"></span>
+                        <input class="create_input test-control" type="text" id="content_tags" name="content_tags" placeholder="tag1, tag2, tag3, ..."  maxlength="<?php echo $content_note_maxlength; ?>" /> <span id="content_tags_result"></span>
                     </div>
                     <h4>Note</h4>
-                    <textarea id="content_notes" name="content_notes" placeholder="Descrizione di questo contenuto. Lunghezza massima: <?php echo $content_note_maxlength;?>" rows="8" maxlength="<?php echo $content_note_maxlength; ?>"></textarea>
+                    <textarea class="create_input" id="content_notes" name="content_notes" placeholder="Lunghezza massima: <?php echo $content_note_maxlength;?> caratteri" rows="8" maxlength="<?php echo $content_note_maxlength; ?>"></textarea>
                     <br>
                     <h4>Altre opzioni</h4>
                     <input type="checkbox" id="content_setting_private" name="content_setting_private" value="1">
@@ -102,6 +110,6 @@ require_once($folder_include . "/navbar.php");
             </div>
         </div>
     </form>
-</div>
+</main>
 
 <?php require_once($folder_include . "/footer.php"); ?>

@@ -6,13 +6,13 @@ require_once("../" . $folder_include . "/dbconn.php");
 kickGuestUser(true);
 
 if (!isset($_POST["oldpassword"]) || !isset($_POST["newpassword"])) {
-    echo "error_invalid";
+    echo _("Dati invalidi.");
     return;
 }
 
 // verifico che la nuova password rispetti i criteri
 if (strlen($_POST["newpassword"]) < 6) {
-    echo "short_password";
+    echo _("Password non valida. Deve essere lunga almeno 6 caratteri.");
     return;
 }
 $newpassword = password_hash($_POST["newpassword"], PASSWORD_DEFAULT); //hash password
@@ -26,13 +26,13 @@ $datiUtente = $esito->fetch_assoc();
 $nrighe = $esito->num_rows;
 
 if ($nrighe == 0) {
-    echo "error_nouser";
+    echo _("Errore interno durante la modifica della password (nouser).");
     return;
 }
 
 $verificaPassword = password_verify($_POST["oldpassword"], $datiUtente["password"]);
 if (!$verificaPassword) {
-    echo "wrong_old_password";
+    echo _("La vecchia password non corrisponde.");
     return;
 }
 
@@ -42,8 +42,7 @@ $stmt->bind_param("si", $newpassword, $id);
 $stmt->execute();
 
 if ($stmt->affected_rows != 1) {
-    echo "error_chngpswd";
+    echo _("Errore interno durante la modifica della password.");
     return;
 }
-
-echo "chngpswd_ok";
+echo _("Password modificata con successo!");

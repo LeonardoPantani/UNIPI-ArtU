@@ -1,5 +1,4 @@
 $(function() {
-    // --- event handlers
     // cambio immagine profilo
     $("#avatar_edit").on("click",function() {
         $("#avatarimginput").trigger('click');
@@ -7,14 +6,18 @@ $(function() {
 
     $("#avatarimginput").on("change",function() {
         const form = $("#chngimg_form");
-        changeProfileImage(form.attr('action'), form);
+        // invio richiesta ajax
+        sendAjax(form.attr('action'), form, function(result) {
+            if (result === "chngimg_ok") {
+                location.reload();
+            }
+        }, true);
     });
 
     if($("#defaulturi").text() === "false") { // ottengo il dato dal campo di testo invisibile settato dal php
         const avatarmain = $("#avatar_main");
 
         avatarmain.on("mouseenter", function() {
-            console.log("ciao");
             $("#avatar_overlay").removeClass("invisible")
         });
 
@@ -24,7 +27,10 @@ $(function() {
 
         $("#avatar_deletebutton").on("click", function() {
             if (confirm("Sei sicuro di voler eliminare l'immagine profilo?")) {
-                deleteProfileImage();
+                // invio richiesta ajax
+                sendAjax($("#chngimg_form").attr('action') + "?deleteimg=1", null, function() {
+                    location.reload();
+                }, false);
             }
         });
     }
@@ -32,7 +38,22 @@ $(function() {
     // cambio password
     $("#chngpswd_form").on("submit",function(e) {
         e.preventDefault();
-        changePassword($(this).attr('action'), $(this));
+        // invio richiesta ajax
+        sendAjax($(this).attr('action'), $(this), function(result) {
+            let dialog = $("#chngpswd_warning");
+            dialog.removeClass("gone");
+            if (result === "chngpswd_ok") {
+                dialog.text(result);
+                $("#chngpswd_form").trigger('reset');
+                updateSubmitButton($("#chngpswd_submitform"), false)
+                setTimeout(function() {
+                    dialog.text("");
+                    updateSubmitButton($("#chngpswd_submitform"), true)
+                }, 3000);
+            } else {
+                dialog.text(result);
+            }
+        }, false);
     });
 
     $("#oldpassword").on('input', function() {
@@ -72,7 +93,16 @@ $(function() {
 
     $("#chngprofvis_form").on("submit",function(e) {
         e.preventDefault();
-        changeProfileVisibility($(this).attr('action'), $(this));
+        // invio richiesta ajax
+        sendAjax($(this).attr('action'), $(this), function(result) {
+            if (result === "chngprofvis_ok") {
+                location.reload();
+            } else {
+                const dialog = $("#chngprofvis_warning");
+                dialog.removeClass("gone");
+                dialog.text(result);
+            }
+        }, false);
     });
 
 
@@ -97,162 +127,20 @@ $(function() {
 
     $("#delacc_form").on("submit",function(e) {
         e.preventDefault();
-
-        if (confirm("Sei DAVVERO sicuro di voler eliminare l'account? E' un'operazione irreversibile.")) {
-            deleteAccount($(this).attr('action'), $(this));
+        // invio richiesta ajax
+        if (confirm("Siete DAVVERO sicuri di voler eliminare l'account? E' un'operazione irreversibile.")) {
+            sendAjax($(this).attr('action'), $(this), function(result) {
+                if (result === "delacc_ok") {
+                    logout();
+                } else {
+                    const dialog = $("#delacc_warning");
+                    dialog.removeClass("gone");
+                    dialog.text(result);
+                }
+            }, false);
         }
     });
 });
-
-// --- funzioni xhr
-function deleteProfileImage() {
-    $.ajax({
-        type: "POST",
-        url: $("#chngimg_form").attr('action') + "?deleteimg=1",
-        success: function() {
-            location.reload();
-        }
-    });
-}
-
-function changeProfileImage(actionurl) {
-    const formData = new FormData($("#chngimg_form")[0]);
-
-    $.ajax({
-        type: "POST",
-        url: actionurl,
-        data: formData,
-        cache: false,
-        contentType: false,
-        processData: false,
-        success: function(result) {
-            if (result === "chngimg_ok") {
-                location.reload();
-            }
-        }
-    });
-}
-
-function changePassword(actionurl, form) {
-    $.ajax({
-        type: "POST",
-        url: actionurl,
-        data: form.serialize(),
-        success: function(result) {
-            const dialog = $("#chngpswd_warning");
-            dialog.removeClass("gone");
-
-            if (result === "chngpswd_ok") {
-                form.trigger('reset');
-                updateSubmitButton($("#chngpswd_submitform"), false)
-                dialog.text("Password modificata con successo!");
-                setTimeout(function() {
-                    dialog.text("");
-                    updateSubmitButton($("#chngpswd_submitform"), true)
-                }, 3000);
-            } else {
-                let dtext;
-                switch (result) {
-                    case "error_invalid": {
-                        dtext = "Dati invalidi."
-                        break;
-                    }
-                    case "short_password": {
-                        dtext = "Password non valida. Deve essere lunga almeno 6 caratteri."
-                        break;
-                    }
-                    case "error_nouser": {
-                        dtext = "Errore interno durante la modifica della password (nouser)."
-                        break;
-                    }
-                    case "wrong_old_password": {
-                        dtext = "La vecchia password non corrisponde."
-                        break;
-                    }
-                    case "error_chngpswd": {
-                        dtext = "Errore interno durante la modifica della password."
-                        break;
-                    }
-                    default: {
-                        dtext = "Errore non specificato.";
-                    }
-                }
-                dialog.text(dtext);
-            }
-        }
-    });
-}
-
-function changeProfileVisibility(actionurl, form) {
-    $.ajax({
-        type: "POST",
-        url: actionurl,
-        data: form.serialize(),
-        success: function(result) {
-            if (result === "chngprofvis_ok") {
-                location.reload();
-            } else {
-                const dialog = $("#chngprofvis_warning");
-                dialog.removeClass("gone");
-                let dtext;
-                switch (result) {
-                    case "error_invalid": {
-                        dtext = "Dati invalidi."
-                        break;
-                    }
-                    case "username_not_equal": {
-                        dtext = "Nome utente errato"
-                        break;
-                    }
-                    case "error_chngprofvis": {
-                        dtext = "Errore interno durante la modifica della visibilità."
-                        break;
-                    }
-                    default: {
-                        dtext = "Errore non specificato.";
-                    }
-                }
-                dialog.text(dtext);
-            }
-        }
-    });
-}
-
-function deleteAccount(actionurl, form) {
-    $.ajax({
-        type: "POST",
-        url: actionurl,
-        data: form.serialize(),
-        success: function(result) {
-            if (result === "delacc_ok") {
-                logout();
-            } else {
-                const dialog = $("#delacc_warning");
-                dialog.removeClass("gone");
-
-                let dtext;
-                switch (result) {
-                    case "error_invalid": {
-                        dtext = "Dati invalidi."
-                        break;
-                    }
-                    case "username_not_equal": {
-                        dtext = "Nome utente errato"
-                        break;
-                    }
-                    case "error_delacc": {
-                        dtext = "Errore interno durante l'eliminazione del tuo account."
-                        break;
-                    }
-                    default: {
-                        dtext = "Errore non specificato.";
-                    }
-                }
-                dialog.text(dtext);
-            }
-        }
-    });
-}
 
 // --- generico
 function updateSubmitButton(button, newStatus) {

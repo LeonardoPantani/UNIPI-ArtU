@@ -1,34 +1,45 @@
 let acceptedExtensionsFile;
 let acceptedExtensionsThumbnail;
 
-/*
-    spiegazione regex:
-    ^ inizio valutazione
-    $ fine valutazione
-    [a-zA-Z_]+ insieme di 1 o più caratteri dell'insieme:
-        lettere tra la a e z (maiusc. e minusc.)
-        trattini bassi
-    (?=(,?\s*)) fa match una virgola seguita da 0 o più spazi
-    (?:\1[a-zA-Z_]+)+ se il gruppo precedente ha successo, fa match con lettere e trattini bassi solo se ne viene definito un insieme di 1 o più
-
-    graficamente visibile su:
-    https://jex.im/regulex/#!embed=true&flags=&re=%5E%5Ba-zA-Z_%5D%2B(%3F%3D(%2C%3F%5Cs*))(%3F%3A%5C1%5Ba-zA-Z_%5D%2B)%2B%24
- */
-let validateTagsInput_regex = new RegExp("^[a-zA-Z_]+(?=(,?\\s*))(?:\\1[a-zA-Z_]+)+$");
-
 $(function() {
-    setAcceptedTypesThumbnail();
+    let validateTitleInput_regex = new RegExp($("#titleregex").text());
+    let validateTagsInput_regex = new RegExp($("#tagregex").text());
 
+    // invio richiesta ajax
+    sendAjax($("#backend").text() + "/accval.php?option=thumbnail", null, function(result) {
+        if (result !== "invalid_data") {
+            acceptedExtensionsThumbnail = result.replaceAll(".", "").split(',');
+
+            $("#content_thumbnail").attr("accept", result);
+            $("#accepted_types_thumbnail").text(acceptedExtensionsThumbnail.toString());
+
+            clearThumbnailInput();
+        } else {
+            console.log("errore ottenimento accepts thumbnail: " + result);
+        }
+    }, false);
+
+    // imposto valori categoria accettati
     let contentCategory = $("#content_category");
-
     contentCategory.on("change", function() {
         if(contentCategory.val() === "default") {
             hideAllNext(1);
         } else {
             showNext(1);
             $("#content_category option[value='default']").remove();
+            // invio richiesta ajax
+            sendAjax($("#backend").text() + "/accval.php?option=" + contentCategory.val(), null, function(result) {
+                if (result !== "invalid_data") {
+                    acceptedExtensionsFile = result.replaceAll(".", "").split(',');
 
-            setAcceptedFiles($("#content_category").val())
+                    $("#content_file").attr("accept", result    );
+                    $("#accepted_types").text(acceptedExtensionsFile.toString());
+
+                    clearFileInput();
+                } else {
+                    console.log("errore ottenimento accepts: " + result);
+                }
+            }, false);
         }
     })
 
@@ -65,8 +76,9 @@ $(function() {
 
     $("#content_tags").on("input", function() {
         let val = $("#content_tags").val();
+        let where = $("#content_tags_result");
         if(val === "") {
-            showTagWarning(false);
+            showInvalidWarning(where, false);
             return;
         }
 
@@ -75,138 +87,68 @@ $(function() {
             let tagslist = trimmedtags.split(",");
 
             if (tagslist.length > $("#tagmaxnumber").text()) {
-                showTagWarning(true);
+                showInvalidWarning(where,true);
                 return;
             }
 
             let error = false;
             tagslist.forEach(function (elem) {
                 if (elem.length > $("#tagmaxlength").text()) {
-                    showTagWarning(true);
+                    showInvalidWarning(where,true);
                     error = true;
                 }
             });
 
-            if(!error) showTagWarning(false);
+            if(!error) showInvalidWarning(where, false);
         } else {
-            showTagWarning(true);
+            showInvalidWarning(where, true);
+        }
+    });
+
+    $("#content_title").on("input", function() {
+        let val = $("#content_title").val();
+        let where = $("#content_title_result");
+        if(val === "") {
+            showInvalidWarning(where, true);
+            return;
+        }
+
+        if(val.length > $("#titlemaxlength").text()) {
+            showInvalidWarning(where, true);
+            return;
+        }
+
+        if(!validateTitleInput_regex.test(val)) {
+            showInvalidWarning(where, true);
+        } else {
+            showInvalidWarning(where, false);
         }
     });
 
     $("#uploadcontent_form").on("submit", function(e) {
         e.preventDefault();
-        const form = $(this);
-        uploadContent(form.attr('action'), form);
-    });
-});
-
-function showTagWarning(error) {
-    let contenttagresult = $("#content_tags_result");
-
-    if(error) {
-        contenttagresult.addClass("color_error")
-        contenttagresult.text("Non valido")
-    } else {
-        contenttagresult.removeClass("color_error")
-        contenttagresult.text("")
-    }
-}
-
-function uploadContent(actionurl) {
-    const formData = new FormData($("#uploadcontent_form")[0]);
-
-    $.ajax({
-        type: "POST",
-        url: actionurl,
-        data: formData,
-        cache: false,
-        contentType: false,
-        processData: false,
-        success: function(result) {
+        // invio richiesta ajax
+        sendAjax($(this).attr('action'), $(this), function(result) {
             const dialog = $("#uploadcontent_warning");
+
             dialog.removeClass("gone");
-            
             if (result.startsWith("uploadcontent_ok")) {
                 redirect("./view.php?id=" + result.split(":").pop())
             } else {
-                let dtext;
-                
-                switch(result) {
-                    case "error_invalid": {
-                        dtext = "Dati invalidi.";
-                        break;
-                    }
-                    case "invalid_content_type": {
-                        dtext = "Categoria contenuto non valida.";
-                        break;
-                    }
-                    case "invalid_content_file": {
-                        dtext = "Errore upload file principale.";
-                        break;
-                    }
-                    case "content_file_too_big": {
-                        dtext = "File troppo grande.";
-                        break;
-                    }
-                    case "invalid_content_file_extensions": {
-                        dtext = "Estensione file non valida per il tipo specificato.";
-                        break;
-                    }
-                    case "invalid_content_thumbnail_extensions": {
-                        dtext = "Estensione miniatura non valida.";
-                        break;
-                    }
-                    case "content_thumbnail_too_big": {
-                        dtext = "File miniatura troppo grande.";
-                        break;
-                    }
-                    case "invalid_tags": {
-                        dtext = "Formato tag non valido.";
-                        break;
-                    }
-                    case "tag_toolong": {
-                        dtext = "I singoli tag non devono superare i 20 caratteri di lunghezza";
-                        break;
-                    }
-                    case "tag_toomany": {
-                        dtext = "Troppi tag! Al massimo ne puoi specificare 30.";
-                        break;
-                    }
-                    case "note_toolong": {
-                        dtext = "Campo note troppo lungo.";
-                        break;
-                    }
-                    case "setting_private_invalid": {
-                        dtext = "Valore del campo impostazioni 'privato' non valido.";
-                        break;
-                    }
-                    case "error_uploadcontent": {
-                        dtext = "Errore durante l'upload del file.";
-                        break;
-                    }
-                    case "error_movecontent": {
-                        dtext = "Errore interno.";
-                        break;
-                    }
-                    default: {
-                        dtext = "Errore non specificato.";
-                    }
-                }
-                dialog.text(dtext);
+                dialog.text(result);
             }
-        }
+        }, true);
     });
-}
+});
 
-function hideAllNext(currentNumber) {
-    $(".step_container").each(function(a, b) {
-        let currentId = $(b).attr("id");
-        if(currentId.charAt(currentId.length-1) > currentNumber) {
-            $(b).fadeTo( 300, 0, function() {
-                $(b).addClass("step_visibility");
-            });
-        }
-    });
+function showInvalidWarning(where, error) {
+    if(error) {
+        where.addClass("color_error")
+        where.text("Non valido")
+    } else {
+        where.removeClass("color_error")
+        where.text("")
+    }
 }
 
 function showNext(currentNumber) {
@@ -217,46 +159,13 @@ function showNext(currentNumber) {
     });
 }
 
-function setAcceptedFiles(option) {
-    $.ajax({
-        type: "POST",
-        url: $("#backend").text() + "/accval.php?option=" + option,
-        cache: false,
-        contentType: false,
-        processData: false,
-        success: function(result) {
-            if (result !== "invalid_data") {
-                acceptedExtensionsFile = result.replaceAll(".", "").split(',');
-
-                $("#content_file").attr("accept", result    );
-                $("#accepted_types").text(acceptedExtensionsFile.toString());
-
-                clearFileInput();
-            } else {
-                console.log("errore ottenimento accepts: " + result);
-            }
-        }
-    });
-}
-
-function setAcceptedTypesThumbnail() {
-    $.ajax({
-        type: "POST",
-        url: $("#backend").text() + "/accval.php?option=thumbnail",
-        cache: false,
-        contentType: false,
-        processData: false,
-        success: function(result) {
-            if (result !== "invalid_data") {
-                acceptedExtensionsThumbnail = result.replaceAll(".", "").split(',');
-
-                $("#content_thumbnail").attr("accept", result);
-                $("#accepted_types_thumbnail").text(acceptedExtensionsThumbnail.toString());
-
-                clearThumbnailInput();
-            } else {
-                console.log("errore ottenimento accepts thumbnail: " + result);
-            }
+function hideAllNext(currentNumber) {
+    $(".step_container").each(function(a, b) {
+        let currentId = $(b).attr("id");
+        if(currentId.charAt(currentId.length-1) > currentNumber) {
+            $(b).fadeTo( 300, 0, function() {
+                $(b).addClass("step_visibility");
+            });
         }
     });
 }

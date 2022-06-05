@@ -1,0 +1,14 @@
+.view_maindiv {
+    margin: 0 1em 1em 1em;
+}
+
+.view_content {
+    max-width: 75vh;
+    max-height: 50vh;
+    margin-bottom: 1em;
+}
+
+.info_content {
+    color: var(--secondary);
+    font-style: italic;
+}

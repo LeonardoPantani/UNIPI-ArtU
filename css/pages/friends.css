@@ -1,0 +1,21 @@
+table {
+    font-family: arial, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+td, th {
+    text-align: left;
+    padding: 8px;
+}
+
+tr:nth-child(even) {
+    background-color: var(--secondary)
+}
+tr:nth-child(odd) {
+    background-color: var(--secondary_variant)
+}
+
+td > a {
+    color: var(--onsecondary)
+}

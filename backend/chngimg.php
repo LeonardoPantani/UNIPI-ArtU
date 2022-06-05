@@ -19,6 +19,11 @@ if(isset($_GET["deleteimg"]) && $_GET["deleteimg"] == "1") {
     return;
 }
 
+if(!isset($_FILES["avatarimginput"])) {
+    echo _("Dati invalidi.");
+    return;
+}
+
 $imagename = $_FILES["avatarimginput"]["name"]; // nome immagine nel pc dell'utente
 $imageextension = pathinfo($imagename, PATHINFO_EXTENSION); // estensione immagine
 $imagesize = $_FILES["avatarimginput"]["size"]; // dimensione in byte
@@ -26,7 +31,7 @@ $imageerror = $_FILES["avatarimginput"]["error"]; // errore upload immagine
 $imagetemp = $_FILES["avatarimginput"]["tmp_name"]; // nome temporaneo immagine caricata
 
 if (!is_uploaded_file($imagetemp)) {
-    echo "upload_failed";
+    echo _("Upload fallito");
     return;
 }
 
@@ -37,7 +42,7 @@ if($filename != $avataruri) { // se cambia il nome del file devo eliminare quell
 }
 
 if (!move_uploaded_file($imagetemp, "../" . $folder_avatars . "/" . $filename)) {
-    echo "error_chngimg";
+    echo _("Errore interno");
     return;
 }
 

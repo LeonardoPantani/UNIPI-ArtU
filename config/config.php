@@ -6,8 +6,11 @@
 
 $service_name = "ServiceName";
 $service_motto = "Fai qualcosa di straordinario";
-$service_version = "20220603";
+$service_version = "20220605";
 $defaultavatar_file = "default.jpg";
+$defaultcontent_file = "default.jpg";
+
+$debug_mode = true; // se vero ignora la password al login
 
 $db_host = "localhost";
 $db_username = "root";
@@ -18,6 +21,7 @@ $table_users = "users";
 $table_usercontent = "usercontent";
 $table_friends = "friends";
 $table_friendrequests = "friendrequests";
+$table_pages = "pages";
 
 $folder_backend = "backend";
 $folder_include = "include";
@@ -25,15 +29,42 @@ $folder_css = "css";
 $folder_scripts = "scripts";
 $folder_media = "media";
 
+$content_page_maxlength = 5000;
+$content_text_view_maxlength = 3000;
+
 // massimi tag 30, lunghezza totale singolo tag 20, con aggiunto virgola e spazio 22, totale: 660 caratteri possibili (700 nel database per sicurezza)
 $content_tag_maxlength = 20;
 $content_tag_maxnumber = 30;
+/*
+    spiegazione regex:
+    ^ inizio valutazione
+    $ fine valutazione
+    [a-zA-Z_]+ insieme di 1 o più caratteri dell'insieme:
+        lettere tra la a e z (maiusc. e minusc.)
+        trattini bassi
+    (?=(,?\s*)) fa match una virgola seguita da 0 o più spazi
+    (?:\1[a-zA-Z_]+)+ se il gruppo precedente ha successo, fa match con lettere e trattini bassi solo se ne viene definito un insieme di 1 o più
 
+    graficamente visibile su:
+    https://jex.im/regulex/#!embed=true&flags=&re=%5E%5Ba-zA-Z_%5D%2B(%3F%3D(%2C%3F%5Cs*))(%3F%3A%5C1%5Ba-zA-Z_%5D%2B)%2B%24
+ */
+$content_tag_regex = "^[a-zA-Z_]+(?=(,?\\s*))(?:\\1[a-zA-Z_]+)+$";
+
+/*
+ * Questa regex consente i seguenti caratteri:
+ * A-Z e a-z
+ * lettere accentate maiuscole e minuscole
+ * spazi
+ * i seguenti simboli: , . ; : - ! ? * ( )
+ */
+$content_title_regex = "^[\wÀ-ú ,.;:\-!?*()]+$";
+$content_title_maxlength = 200;
 $content_note_maxlength = 1000;
-$content_file_maxsize = 10000000; // 10 mb = 10 milioni di byte
-$content_thumbnail_maxsize = 1000000; // 1mb = 1 milione di byte
+$content_file_maxsize = 100000000; // 100 mb = 100 milioni di byte
+$content_thumbnail_maxsize = 15000000; // 15mb = 10 milioni di byte
 
 $usercontent_types = ["photo", "video", "drawing", "music", "text", "poetry"];
+$usercontent_directlyviewable = ["photo", "drawing"];
 
 $folder_usercontent = "usercontent";
 $folder_avatars = $folder_usercontent . "/" . "avatars";

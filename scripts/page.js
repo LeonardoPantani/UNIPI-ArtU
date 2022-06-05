@@ -1,52 +1,41 @@
 $(function() {
-    let res = $("#sndfrndreq");
+    let ressnd = $("#sndfrndreq");
 
-    res.on("click", function(e) {
+    ressnd.on("click", function(e) {
         e.preventDefault();
 
-        if(res.attr("href") === "") return;
+        if(ressnd.attr("href") === "") return;
 
-        $.ajax({
-            type: "POST",
-            url: res.attr("href"),
-            cache: false,
-            contentType: false,
-            processData: false,
-            success: function(result) {
-                res.attr("href", "");
-                if (result === "sndfrndreq_ok") {
-                    res.html("☑ Richiesta inviata.");
-                } else {
-                    let dtext;
-
-                    switch(result) {
-                        case "error_invalid": {
-                            dtext = "Dati invalidi.";
-                            break;
-                        }
-                        case "same_user": {
-                            dtext = "Non potete mandarvi da soli una richiesta di amicizia.";
-                            break;
-                        }
-                        case "already_friends": {
-                            dtext = "Siete già amici.";
-                            break;
-                        }
-                        case "already_sent": {
-                            dtext = "C'è già una vostra richiesta di amicizia in attesa.";
-                            break;
-                        }
-                        case "error_sndfrndreq": {
-                            dtext = "Errore interno.";
-                            break;
-                        }
-                        default: {
-                            dtext = "Errore non specificato.";
-                        }
-                    }
-                    res.html("❌ " + dtext);
-                }
+        sendAjax(ressnd.attr("href"), null, function(result) {
+            ressnd.attr("href", "");
+            if (result === "sndfrndreq_ok") {
+                ressnd.html("☑ Richiesta inviata.");
+            } else {
+                ressnd.html("❌ " + result);
             }
-        });
+        }, false);
     });
+
+    let resdel = $("#delfrndreq");
+    resdel.on("click", function(e) {
+        e.preventDefault();
+
+        if(!confirm("Sicuri di voler eseguire questa azione?")) {
+            return;
+        }
+
+        sendAjax(resdel.attr("href"), null, function(result) {
+            resdel.attr("href", "");
+            if (result === "delfrnd_ok") {
+                resdel.html("☑ Fatto");
+                setTimeout(function() {
+                    location.reload();
+                }, 3000);
+            } else {
+                setTimeout(function() {
+                    resdel.html("❌ " + result);
+                }, 3000);
+            }
+        },false);
+    })
 });

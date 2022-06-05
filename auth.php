@@ -13,7 +13,7 @@ require_once($folder_include . "/head.php"); ?>
 <?php require_once($folder_include . "/navbar.php");
 ?>
 
-<div class="main_content">
+<main class="main_content">
     <div id="auth_grid_container" class="align_center bgcolor_important color_on_info width_50 bold" style="background-image: url('./media/auth1.webp');">
         <div class="auth_grid_item_welcome" style="grid-area: welcome;">Benvenuti</div>
         <div class="auth_grid_item_welcome" style="grid-area: hello;">Bentornati</div>
@@ -30,7 +30,7 @@ require_once($folder_include . "/head.php"); ?>
     <div class="flex_container width_50 align_center">
         <div class="flex_item flexratio_50 bgcolor_primary color_on_primary">
             <h1>Registratevi</h1>
-            <form id="form_register" autocomplete="off" action="./<?php echo $folder_backend; ?>/dbauth.php" method="POST">
+            <form class="form_auth" autocomplete="off" action="./<?php echo $folder_backend; ?>/dbauth.php" method="POST">
                 <input type="text" name="username" placeholder="Nome utente"><br>
 
                 <input type="email" name="email" placeholder="Email"><br>
@@ -45,7 +45,7 @@ require_once($folder_include . "/head.php"); ?>
         </div>
         <div class="flex_item flexratio_50 bgcolor_primary color_on_primary">
             <h1>Accedete</h1>
-            <form id="form_login" autocomplete="on" action="./<?php echo $folder_backend; ?>/dbauth.php" method="POST">
+            <form class="form_auth" autocomplete="on" action="./<?php echo $folder_backend; ?>/dbauth.php" method="POST">
                 <input type="text" name="access" placeholder="Nome utente o Email"><br>
 
                 <input type="password" name="password" placeholder="Password"><br>
@@ -55,5 +55,5 @@ require_once($folder_include . "/head.php"); ?>
             </form>
         </div>
     </div>
-</div>
+</main>
 <?php require_once($folder_include . "/footer.php"); ?>

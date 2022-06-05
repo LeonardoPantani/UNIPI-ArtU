@@ -14,7 +14,7 @@ require_once($folder_include . "/head.php"); ?>
 require_once($folder_include . "/navbar.php");
 ?>
 
-<div class="main_content">
+<main class="main_content">
     <p id="username" class="gone"><?php echo $username; ?></p>
     <p id="defaulturi" class="gone"><?php if($defaultavatar_file == $avataruri) echo "true"; else echo "false"; ?></p>
 
@@ -41,7 +41,9 @@ require_once($folder_include . "/navbar.php");
                     <?php
                         $pendingfriendrequests = getNumPendingFriendRequests($id);
                         if($pendingfriendrequests > 0) {
-                            ?><a href="friendrequests.php">Avete <?php echo $pendingfriendrequests; ?> richiesta(e) in attesa. Cliccate per vedere</a><?php
+                            ?><a href="friends.php">Avete <?php echo $pendingfriendrequests; ?> richiesta(e) in attesa. Cliccate per vedere</a><?php
+                        } else {
+                            ?><a href="friends.php">(<?php echo getFriendsNumber($id); ?>) Scheda amici</a><?php
                         }
                     ?>
                     </p>
@@ -62,6 +64,8 @@ require_once($folder_include . "/navbar.php");
                     </span>
                 </p>
                 <a href="./page.php?username=<?php echo $username; ?>">📃 Andate alla vostra pagina del profilo pubblica</a>
+                <br>
+                <a href="./editpage.php">🔧 Cambiare pagina profilo</a>
             </div>
             <hr>
             <div>
@@ -125,6 +129,6 @@ require_once($folder_include . "/navbar.php");
             </div>
         </div>
     </div>
-</div>
+</main>
 
 <?php require_once($folder_include . "/footer.php"); ?>
