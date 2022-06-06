@@ -22,7 +22,7 @@ $(function() {
     });
 
     $("#goback").on("click", function() {
-        redirect("./settings.php");
+        redirect("./profile.php");
     });
 });
 

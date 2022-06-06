@@ -9,6 +9,12 @@
 }
 
 .info_content {
+    display: block;
+    margin: 1em 0;
     color: var(--secondary);
     font-style: italic;
+}
+
+#itsyou {
+    color: var(--link);
 }

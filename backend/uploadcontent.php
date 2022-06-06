@@ -74,7 +74,7 @@ if($_POST["content_tags"] != "") {
         return;
     }
 
-    $trimmedtags = trim($_POST["content_tags"]);
+    $trimmedtags = trim(str_replace(" ", "", $_POST["content_tags"]));
     $tagslist = explode(",", $trimmedtags);
 
     if(sizeof($tagslist) > $content_tag_maxnumber) {
@@ -89,7 +89,7 @@ if($_POST["content_tags"] != "") {
         }
     }
 
-    $content_tags = $_POST["content_tags"];
+    $content_tags = serialize($tagslist);
 }
 
 // controllo che le note non superino il limite di caratteri
@@ -99,7 +99,7 @@ if($_POST["content_notes"] != "") {
         echo _("Campo note troppo lungo.");
         return;
     }
-    $content_notes = $_POST["content_notes"];
+    $content_notes = trim(htmlspecialchars($_POST["content_notes"]));
 }
 
 // controllo settings

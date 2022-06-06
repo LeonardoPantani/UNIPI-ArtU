@@ -11,6 +11,7 @@ require_once($folder_include . "/head.php"); ?>
 <script src="<?php echo $folder_scripts; ?>/index.js"></script>
 <?php
 require_once($folder_include . "/navbar.php");
+// ottengo tutti i contenuti degli utenti pubblici
 $stmt = $dbconn->prepare("SELECT $table_usercontent.*, $table_users.username FROM $table_usercontent JOIN $table_users ON $table_usercontent.userid = $table_users.id WHERE private = 0 ORDER BY creationDate DESC");
 $stmt->execute();
 $esito = $stmt->get_result();
@@ -47,6 +48,8 @@ $esito = $stmt->get_result();
             } else {
                 $finalSource = $fileCategory . "/" . $defaultcontent_file;
             }
+
+            $tags = getTagArray($row["tags"]);
         ?>
         <article class="explore_item bgcolor_secondary">
             <a href="view.php?id=<?php echo $row["id"]; ?>">
@@ -55,8 +58,8 @@ $esito = $stmt->get_result();
                 </picture>
                 <div class="explore_item_content">
                     <h4 class="explore_item_contenttitle"><?php echo $row["title"]; ?></h4>
-                    <i class="explore_item_contenttags"><small><?php if($row["tags"] != "") { echo "" . $row["tags"]; } ?></small></i>
-                    <p><?php echo getCutString($row["notes"], 50); ?></p>
+                    <pre class="explore_item_contenttags"><?php if(!empty($tags)) echo getPrintableArray($tags); ?></pre>
+                    <p><?php echo getFixedString(getCutString($row["notes"], $content_index_note_maxlength)); ?></p>
                 </div>
             </a>
         </article>

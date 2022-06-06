@@ -6,6 +6,10 @@
     top: 0;
 }
 
+.navbar_left img {
+    max-height: 1.5em;
+}
+
 .navbar_list a {
     text-decoration: none;
     color: inherit;
@@ -24,7 +28,7 @@
     font-weight: bold;
 }
 
-.navbar_left >:hover {
+.navbar_left a:hover {
     background-color: #111;
     opacity: 0.4;
 }
@@ -42,25 +46,19 @@
     font-weight: bold;
 }
 
-.navbar_right > :hover {
+.navbar_right > a:hover {
     background-color: #111;
     opacity: 0.4;
 }
 
 /* altro */
-#navbar_version {
-    color: lightgray;
-    font-weight: normal;
-}
-
 #navbar_datetime {
     color: lightgray;
     font-weight: bold;
 }
 
 #navbar_avatar {
-    height:1em;
-    padding: 0 16px;
+    padding: 0 12px;
 }
 
 .active {

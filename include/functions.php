@@ -132,7 +132,7 @@ function getUserContentById($contentid): bool|array|null
 {
     global $dbconn, $table_usercontent, $table_users, $folder_thumbnail;
 
-    $stmt = $dbconn->prepare("SELECT $table_usercontent.*, $table_users.username FROM $table_usercontent JOIN $table_users ON $table_usercontent.userid = $table_users.id WHERE $table_usercontent.id = ?");
+    $stmt = $dbconn->prepare("SELECT $table_usercontent.*, $table_users.username, $table_users.avatarUri FROM $table_usercontent JOIN $table_users ON $table_usercontent.userid = $table_users.id WHERE $table_usercontent.id = ?");
     $stmt->bind_param("i", $contentid);
     $stmt->execute();
     $esito = $stmt->get_result();
@@ -141,6 +141,8 @@ function getUserContentById($contentid): bool|array|null
     if($ret === null || $ret === false) {
         return $ret;
     } else {
+        $ret["tags"] = getTagArray($ret["tags"]);
+
         if($ret["contentExtension"] != "") {
             $ret["contentUri"] = getContentFolderByCategory($ret["type"]) . "/" . $contentid . "." . $ret["contentExtension"];
         } else {
@@ -154,6 +156,42 @@ function getUserContentById($contentid): bool|array|null
         }
     }
     return $ret;
+}
+
+/**
+ * Restituisce la stringa senza i caratteri "a capo".
+ * @param string la stringa da cui rimuovere nuove linee
+ * @return string la stringa senza nuove linee
+ */
+function getFixedString($string): string
+{
+    return trim(preg_replace('/\s+/', ' ', $string));
+}
+
+/**
+ * Restituisce l'array di tags.
+ * @param serializedArray array serializzato preso dal database di tags
+ * @return array l'array con un tag per posizione
+ */
+function getTagArray($serializedArray): array
+{
+    $ret = @unserialize($serializedArray);
+
+    if($ret === false) {
+        return array();
+    } else {
+        return $ret;
+    }
+}
+
+/**
+ * Restituisce la stringa creata dall'array pronta per essere stampata.
+ * @param array l'array da preparare per la stampa
+ * @return string la stringa da stampare
+ */
+function getPrintableArray($array): string
+{
+    return implode(", ", $array);
 }
 
 function getNumPendingFriendRequests($userid) {
@@ -345,7 +383,21 @@ function getStringReadTime($string): float
     /*
      * In media una persona legge 200 parole al minuto (3,4 parole al secondo)
      */
-    return floor(str_word_count($string) / 3.4);
+    return floor(str_word_count(strip_tags($string)) / 3.4);
+}
+
+
+function getFormattedTime($time): string
+{
+    if($time < 60) {
+        return gmdate('s \s\e\c\o\n\d\i', $time);
+    }
+
+    if($time < 3600) {
+        return gmdate('i \m\i\n\u\t\i \e s \s\e\c\o\n\d\i', $time);
+    }
+
+    return gmdate('h \o\r\e \e i \m\i\n\u\t\i \e s \s\e\c\o\n\d\i', $time);
 }
 
 // -------- CODICE GLOBALE

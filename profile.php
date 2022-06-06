@@ -1,5 +1,5 @@
 <?php
-$title = "Impostazioni";
+$title = "🧑 Il tuo Profilo";
 $description = "Qui puoi vedere il tuo profilo e fare modifiche.";
 $tags = "";
 require_once("config/config.php");
@@ -8,8 +8,8 @@ require_once($folder_include . "/dbconn.php");
 kickGuestUser();
 // da qui in poi viene aggiunto output alla pagina HTML...
 require_once($folder_include . "/head.php"); ?>
-<link rel="stylesheet" href="<?php echo $folder_css; ?>/pages/settings.css">
-<script src="<?php echo $folder_scripts; ?>/settings.js"></script>
+<link rel="stylesheet" href="<?php echo $folder_css; ?>/pages/profile.css">
+<script src="<?php echo $folder_scripts; ?>/profile.js"></script>
 <?php
 require_once($folder_include . "/navbar.php");
 ?>
@@ -19,7 +19,7 @@ require_once($folder_include . "/navbar.php");
     <p id="defaulturi" class="gone"><?php if($defaultavatar_file == $avataruri) echo "true"; else echo "false"; ?></p>
 
     <div class="flex_container">
-        <div class="flex_item width_50 bgcolor_primary color_on_primary">
+        <div class="flex_item bgcolor_primary color_on_primary">
             <div class="flex_container">
                 <div class="flex_item flexratio_40 color_on_primary textalign_end">
                     <div id="avatar_main">
@@ -36,14 +36,14 @@ require_once($folder_include . "/navbar.php");
                     </div>
                 </div>
                 <div class="flex_item flexratio_60 color_on_primary textalign_start bold">
-                    <h1>Che piacere rivedervi, <span class="color_info"><?php echo $username; ?></span>!</h1>
+                    <h1>Che piacere rivedervi, <a title="Aprite la tua pagina pubblica" target="_blank" href="./page.php?username=<?php echo $username; ?>"><span class="color_info"><?php echo $username; ?></span></a>!</h1>
                     <p>
                     <?php
                         $pendingfriendrequests = getNumPendingFriendRequests($id);
                         if($pendingfriendrequests > 0) {
-                            ?><a href="friends.php">Avete <?php echo $pendingfriendrequests; ?> richiesta(e) in attesa. Cliccate per vedere</a><?php
+                            ?><a href="friends.php">📫 Avete <?php echo $pendingfriendrequests; ?> richiesta(e) in attesa. Cliccate per vedere</a><?php
                         } else {
-                            ?><a href="friends.php">(<?php echo getFriendsNumber($id); ?>) Scheda amici</a><?php
+                            ?><a href="friends.php">📪 (<?php echo getFriendsNumber($id); ?>) Scheda Amici</a><?php
                         }
                     ?>
                     </p>
@@ -54,17 +54,16 @@ require_once($folder_include . "/navbar.php");
                 <h2>ℹ Informazioni sul profilo</h2>
                 <p>Indirizzo email: <code><?php echo $email; ?></code></p>
                 <p>Data creazione: <b><?php echo getFormattedDate($creationDate); ?></b></p>
-                <p>Visibilità:
+                <p>Visibilità pagina:
                     <span class="color_secondary">
                         <?php if ($visibility) {
-                            echo "Pubblico 👥";
+                            echo "Pubblica 👥";
                         } else {
-                            echo "Privato 👤";
+                            echo "Privata 👤";
                         } ?>
                     </span>
                 </p>
-                <a href="./page.php?username=<?php echo $username; ?>">📃 Andate alla vostra pagina del profilo pubblica</a>
-                <br>
+                <!--<a href="./page.php?username=<?php echo $username; ?>">📃 Andate alla vostra pagina del profilo pubblica</a><br>-->
                 <a href="./editpage.php">🔧 Cambiare pagina profilo</a>
             </div>
             <hr>
@@ -85,7 +84,7 @@ require_once($folder_include . "/navbar.php");
                 <div class="flex_container">
                     <div class="flex_item flexratio_50 textalign_start">
                         <h3 class="color_important uppercase">👻 Cambia visibilità</h3>
-                        <p>In modalità privata il profilo non sarà visibile al pubblico, ma potrete continuare a navigare su <?php echo $service_name; ?>. In modalità pubblica, tutti potranno vedere il vostro profilo e lasciare un commento.</p>
+                        <p>In modalità privata la pagina non sarà visibile al pubblico. Potrete continuare a navigare su <b><?php echo $service_name; ?></b>. In modalità pubblica, tutti potranno vedere la vostra pagina.</p>
                     </div>
 
                     <div class="flex_item flexratio_50">

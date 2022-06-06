@@ -27,7 +27,7 @@ $esitoFriends = getUserFriends($id);
         <div class="flex_item width_50 bgcolor_primary color_on_primary">
             <h1>Richieste di amicizia</h1>
             <?php if($esito->num_rows > 0) { ?>
-            <table id="table_frndreq">
+            <table id="table_frndreq" class="color_on_secondary">
                 <tr>
                     <th>Nome utente</th>
                     <th>Data di invio</th>
@@ -48,7 +48,7 @@ $esitoFriends = getUserFriends($id);
                 ?>
             </table>
             <?php } else { ?>
-                <p>Nessuna richiesta di amicizia in sospeso.</p>
+                <p>Niente da mostrare.</p>
             <?php } ?>
             <br>
             <hr>
@@ -73,10 +73,10 @@ $esitoFriends = getUserFriends($id);
                     ?>
                 </table>
             <?php } else { ?>
-                <p>Non avete amici.</p>
+                <p>Niente da mostrare.</p>
             <?php } ?>
             <br>
-            <a href="./settings.php">🔙 Torna al tuo profilo</a>
+            <a href="./profile.php">🔙 Tornate al profilo</a>
         </div>
     </div>
 </main>

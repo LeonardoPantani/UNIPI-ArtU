@@ -1,12 +1,10 @@
 <?php
-
 /**
  * File di configurazione. Contiene alcune variabili modificabili e altre che indicano i percorsi dei vari componenti del sito.
  */
-
-$service_name = "ServiceName";
+$service_name = "ArtU";
 $service_motto = "Fai qualcosa di straordinario";
-$service_version = "20220605";
+$service_version = "20220606";
 $defaultavatar_file = "default.jpg";
 $defaultcontent_file = "default.jpg";
 
@@ -25,9 +23,14 @@ $table_pages = "pages";
 
 $folder_backend = "backend";
 $folder_include = "include";
+$folder_libraries = "libraries";
 $folder_css = "css";
 $folder_scripts = "scripts";
 $folder_media = "media";
+
+$time_between_publications = 0; // in secondi, tempo minimo tra una pubblicazione e l'altra
+
+$content_index_note_maxlength = 150;
 
 $content_page_maxlength = 5000;
 $content_text_view_maxlength = 3000;
@@ -59,9 +62,9 @@ $content_tag_regex = "^[a-zA-Z_]+(?=(,?\\s*))(?:\\1[a-zA-Z_]+)+$";
  */
 $content_title_regex = "^[\wÀ-ú ,.;:\-!?*()]+$";
 $content_title_maxlength = 200;
-$content_note_maxlength = 1000;
-$content_file_maxsize = 100000000; // 100 mb = 100 milioni di byte
-$content_thumbnail_maxsize = 15000000; // 15mb = 10 milioni di byte
+$content_note_maxlength = 3000;
+$content_file_maxsize = 30000000; // 30 mb = 30 milioni di byte
+$content_thumbnail_maxsize = 15000000; // 15mb = 15 milioni di byte
 
 $usercontent_types = ["photo", "video", "drawing", "music", "text", "poetry"];
 $usercontent_directlyviewable = ["photo", "drawing"];

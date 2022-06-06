@@ -1,4 +1,4 @@
-<?php $title = "Vedi Contenuto";
+<?php $title = "🔡 Vedi contenuto";
 $description = "Questo è il contenuto personalizzato di un utente.";
 $tags = "customcontent";
 require_once("config/config.php");
@@ -13,6 +13,13 @@ if(!isset($_GET["id"]) || $_GET["id"] == "") {
     $usercontentdata = null;
 }  else {
     $usercontentdata = getUserContentById($_GET["id"]);
+
+    if($usercontentdata != null) {
+        $amIFriend = false;
+
+        if(isLogged())
+            $amIFriend = amIFriendOf($id, $usercontentdata["id"]);
+    }
 }
 ?>
 
@@ -26,14 +33,25 @@ if(!isset($_GET["id"]) || $_GET["id"] == "") {
                     Lo schema corretto per visualizzare la risorsa di un utente è: <code>pagina.php?id=*idrisorsa*</code>
                 </p>
                 <br>
-                <a href="./">🔙 Torna alla homepage</a>
+                <a href="./">🔙 Tornate alla homepage</a>
+            </div>
+        <?php } else if($usercontentdata["private"] == "1" && !$amIFriend) { ?>
+            <div class="flex_item width_50 bgcolor_error color_on_error">
+                <p>
+                    Non puoi visualizzare questo contenuto perché <b><?php echo $usercontentdata["username"]; ?></b> lo ha
+                    impostato come 'Privato'.<br><br>
+                    Per adesso, puoi accedere alla sua <a href="./page.php?username=<?php echo $usercontentdata["username"]; ?>">pagina pubblica</a>
+                    per inviargli una richiesta di amicizia.
+                </p>
+                <br>
+                <a href="./">🔙 Tornate alla homepage</a>
             </div>
         <?php } else { ?>
             <div class="flex_item width_50 bgcolor_primary color_on_primary">
                 <h2><?php echo $usercontentdata["title"]; ?></h2>
                 <div class="view_maindiv">
                     <?php if($usercontentdata["type"] == "photo" || $usercontentdata["type"] == "drawing") { ?>
-                        <img class="view_content" src="./<?php echo $usercontentdata["contentUri"]; ?>"  alt="Contenuto dell'utente"/>
+                        <img class="view_content" src="./<?php echo $usercontentdata["contentUri"]; ?>" alt="Contenuto dell'utente"/>
                     <?php } ?>
 
                     <?php if($usercontentdata["type"] == "video") { ?>
@@ -54,14 +72,12 @@ if(!isset($_GET["id"]) || $_GET["id"] == "") {
                             if($usercontentdata["contentExtension"] == "txt") {
                                 $filecontent = nl2br(file_get_contents("./" . $usercontentdata["contentUri"]));
                                 $cutcontent = getCutString($filecontent, $content_text_view_maxlength); ?>
-                                <p class="view_content textalign_start">
-                                <span class="info_content">Tempo di lettura: <?php echo gmdate("i:s", getStringReadTime($filecontent)); ?></span>
-                                <br><br>
-                                <?php
-                                echo $cutcontent;
+                                <p class="textalign_start">
+                                <span class="info_content">Tempo di lettura: <?php echo getFormattedTime(getStringReadTime($filecontent)); ?></span>
+                                <?php echo $cutcontent; ?>
 
-                                if(strlen($filecontent) != strlen($cutcontent)) {
-                                    ?><br><br><span class="info_content">... per continuare a leggere, scarica il file dal pulsante sotto!</span><?php
+                                <?php if(strlen($filecontent) > strlen($cutcontent)) {
+                                    ?><span class="info_content">... per continuare a leggere, scarica il file dal pulsante sotto!</span><?php
                                 }
                             } else {
                                 ?><p class="textalign_center">Non riesco a mostrare questo file. Scaricarlo dal pulsante sotto!<?php
@@ -71,15 +87,22 @@ if(!isset($_GET["id"]) || $_GET["id"] == "") {
                     <?php } ?>
                     <br>
                     <a href="./<?php echo $folder_backend; ?>/download.php?id=<?php echo $usercontentdata["id"]; ?>"><button class="button bgcolor_secondary color_on_secondary">📥 Scarica contenuto originale</button></a>
-                    <p class="textalign_start"><?php echo $usercontentdata["notes"]; ?></p>
+                    <?php if(!empty($usercontentdata["notes"])) { ?>
+                    <div class="textalign_start">
+                        <h3>Descrizione</h3>
+                        <p><?php echo nl2br($usercontentdata["notes"]); ?></p>
+                    </div>
+                    <?php } ?>
                 </div>
                 <hr>
                 <div class="textalign_start">
                     <h2>Informazioni sul contenuto</h2>
                     <p>
-                        Tipo risorsa: <b><?php echo $usercontentdata["type"]; ?></b><br>
-                        Utente creatore: <b><a title="Clicca per accedere alla pagina dell'utente" href="page.php?username=<?php echo $usercontentdata["username"]; ?>"><?php echo $usercontentdata["username"]; ?></a></b> <?php if($username == $usercontentdata["username"]) { ?><i><small>Ehi guardate, siete voi!</small></i><?php } ?><br>
-                        Data creazione: <b><?php echo getFormattedDateTime($usercontentdata["creationDate"]); ?></b><br>
+                        <img class="avatar avatar_medium" src="./<?php echo $folder_avatars . "/" . $usercontentdata["avatarUri"]; ?>" alt=""/><br>
+                        Creatore: <b><a target="_blank" title="Clicca per aprire la pagina dell'utente" href="page.php?username=<?php echo $usercontentdata["username"]; ?>"><?php echo $usercontentdata["username"]; ?></a></b> <?php if(isLogged() && $id == $usercontentdata["id"]) { ?><i id="itsyou"><small>Ehi guardate, siete voi!</small></i><?php } ?><br>
+                        Pubblicazione: <b><?php echo getFormattedDateTime($usercontentdata["creationDate"]); ?></b><br>
+                        Tags: <code><?php if(!empty($usercontentdata["tags"])) echo getPrintableArray($usercontentdata["tags"]); else echo "nessuno"; ?></code><br>
+                        Privato?: <?php if($usercontentdata["private"] == "1") {echo "sì"; echo " (riesci a vedere questo contenuto perché "; if($id == $usercontentdata["id"]) { echo "l'hai creato te"; } else { echo "sei amico del creatore"; } echo ")"; } else { echo "no"; } ?>
                     </p>
                 </div>
                 <br>

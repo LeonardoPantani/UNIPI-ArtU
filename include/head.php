@@ -14,6 +14,6 @@
     <link rel="stylesheet" href="<?php echo $folder_css; ?>/navbar.css">
     <link rel="stylesheet" href="<?php echo $folder_css; ?>/footer.css">
 
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="<?php echo $folder_libraries; ?>/jquery-3.6.0.min.js"></script>
     <script src="<?php echo $folder_scripts; ?>/main.js"></script>
     <!-- informazioni extra (specifici per pagina) dell'head saranno caricati dopo questa riga -->
