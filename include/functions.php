@@ -94,43 +94,61 @@ function deleteAvatar($avataruri)
 
 /**
  * @param username di cui si vuole ottenere i dati
- * @return bool|array|null l'array contenente i dati dell'utente se l'username corrisponde, null se non corrisponde niente, falso in caso di errore della query
+ * @return int|null l"id dell'utente, null altrimenti
  */
-function getUserDataByUsername($username): bool|array|null
+function getUserIdByUsername($username): int|null
 {
-    global $dbconn, $table_users, $table_pages;
+    global $dbconn, $table_users;
 
-    $stmt = $dbconn->prepare("SELECT $table_users.* FROM $table_users WHERE username = ?");
+    if(!validateUsername($username)) return null;
+
+    $stmt = $dbconn->prepare("SELECT $table_users.id FROM $table_users WHERE username = ?");
     $stmt->bind_param("s", $username);
     $stmt->execute();
     $esito = $stmt->get_result();
+    $ret = $esito->fetch_assoc();
 
-    return $esito->fetch_assoc();
+    if($ret === null || $ret === false) {
+        return null;
+    }
+
+    return $ret["id"];
 }
 
 /**
  * @param id dell'utente di cui si vuole ottenere la pagina
  * @return bool|array|null l'array contenente la pagina se l'id corrisponde, null se non corrisponde niente (l'utente potrebbe non ha mai modificato la pagina o non esiste), falso in caso di errore della query
  */
-function getPageById($userid): bool|array|null
+function getPageById($userid): array|null
 {
-    global $dbconn, $table_pages;
+    global $dbconn, $table_pages, $table_users;
 
-    $stmt = $dbconn->prepare("SELECT * FROM $table_pages WHERE userid = ?");
+    $userid = intval($userid);
+    if($userid == 0) return null;
+
+    $stmt = $dbconn->prepare("SELECT $table_pages.*, $table_users.username, $table_users.avatarUri, $table_users.visibility FROM $table_pages JOIN $table_users ON $table_pages.userid = $table_users.id WHERE userid = ?");
     $stmt->bind_param("i", $userid);
     $stmt->execute();
     $esito = $stmt->get_result();
+    $ret = $esito->fetch_assoc();
 
-    return $esito->fetch_assoc();
+    if($ret === null || $ret === false) {
+        return null;
+    }
+
+    return $ret;
 }
 
 /**
  * @param contentid id del contenuto di un utente
  * @return bool|array|null l'array contenente i dati del content se l'id esiste, null se non corrisponde niente, falso in caso di errore della query
  */
-function getUserContentById($contentid): bool|array|null
+function getUserContentById($contentid): array|null
 {
     global $dbconn, $table_usercontent, $table_users, $folder_thumbnail;
+
+    $contentid = intval($contentid);
+    if($contentid == 0) return null;
 
     $stmt = $dbconn->prepare("SELECT $table_usercontent.*, $table_users.username, $table_users.avatarUri FROM $table_usercontent JOIN $table_users ON $table_usercontent.userid = $table_users.id WHERE $table_usercontent.id = ?");
     $stmt->bind_param("i", $contentid);
@@ -139,7 +157,7 @@ function getUserContentById($contentid): bool|array|null
 
     $ret = $esito->fetch_assoc();
     if($ret === null || $ret === false) {
-        return $ret;
+        return null;
     } else {
         $ret["tags"] = getTagArray($ret["tags"]);
 
@@ -222,15 +240,17 @@ function getFriendRequestById($friendreqid): bool|array|null
 }
 
 /**
- * @param id l'id dell'utente di cui voglio sapere se sono amico
+ * @param other l'id dell'utente di cui voglio sapere se sono amico
  * @return boolean vero se sono amico dell'utente con quell'id, falso altrimenti
  */
-function amIFriendOf($me, $other): bool
+function amIFriendOf($other): bool
 {
     global $dbconn, $table_friends;
 
+    if(!isLogged()) return false;
+
     $stmt = $dbconn->prepare("SELECT * FROM $table_friends WHERE (userida = ? AND useridb = ?) OR (userida = ? AND useridb = ?)");
-    $stmt->bind_param("iiii", $me, $other, $other, $me);
+    $stmt->bind_param("iiii", $id, $other, $other, $id);
     $stmt->execute();
     $esito = $stmt->get_result();
 
@@ -398,6 +418,108 @@ function getFormattedTime($time): string
     }
 
     return gmdate('h \o\r\e \e i \m\i\n\u\t\i \e s \s\e\c\o\n\d\i', $time);
+}
+
+function getRatings($type, $elementID): array
+{
+    global $dbconn, $table_pages_ratings, $table_usercontent_ratings;
+
+    $ret = array();
+    $ret["likes"] = 0;
+    $ret["dislikes"] = 0;
+
+    if($type == "content") {
+        $tabella = $table_usercontent_ratings;
+        $colonna = "contentid";
+    } else if($type == "page") {
+        $tabella = $table_pages_ratings;
+        $colonna = "userpageid";
+    } else {
+        return $ret;
+    }
+    $stmt = $dbconn->prepare("SELECT * FROM $tabella WHERE $colonna = ?");
+    $stmt->bind_param("i", $elementID);
+    $stmt->execute();
+    $esito = $stmt->get_result();
+
+    while($row = $esito->fetch_assoc()) {
+        if($row["value"] == 0) {
+            $ret["dislikes"]++;
+        }
+
+        if($row["value"] == 1) {
+            $ret["likes"]++;
+        }
+    }
+
+    return $ret;
+}
+
+function getUserRating($type, $userid, $elementID) {
+    global $dbconn, $table_pages_ratings, $table_usercontent_ratings;
+
+    if($type == "content") {
+        $tabella = $table_usercontent_ratings;
+        $colonna = "contentid";
+    } else if($type == "page") {
+        $tabella = $table_pages_ratings;
+        $colonna = "userpageid";
+    } else {
+        return -1;
+    }
+
+    $stmt = $dbconn->prepare("SELECT value FROM $tabella WHERE userid = ? AND $colonna = ?");
+    $stmt->bind_param("ii", $userid, $elementID);
+    $stmt->execute();
+    $esito = $stmt->get_result();
+    $dati = $esito->fetch_assoc();
+    if($dati != null) {
+        return $dati["value"];
+    } else {
+        return -1;
+    }
+}
+
+/**
+ * Determina se l'utente attualmente connesso può accedere al contenuto o meno.
+ * @param contentid id del contenuto dell'utente a cui si vuole accedere
+ * @return bool vero se si può interagire con il contenuto, falso altrimenti
+ */
+function canISeeContent($contentid): bool
+{
+    global $id;
+
+    $dati = getUserContentById($contentid);
+    if($dati != null) {
+        if($dati["private"] == "0" || (isLogged() && (amIFriendOf($dati["userid"]) || $id == $dati["userid"]))) {
+            return true;
+        } else {
+            return false;
+        }
+    } else {
+        return false;
+    }
+}
+
+/**
+ * Determina se l'utente attualmente connesso può accedere alla pagina o meno.
+ * @param userpageid id della pagina dell'utente a cui si vuole accedere (
+ * @return bool vero se si può interagire con la pagina, falso altrimenti
+ */
+function canISeePage($userpageid): bool
+{
+    global $id;
+
+    $dati = getPageById($userpageid);
+    if($dati != null) {
+        if($dati["visibility"] == 1 || (isLogged() && (amIFriendOf($dati["userid"]) || $id == $dati["userid"]))) {
+            return true;
+        } else {
+            return false;
+        }
+    } else {
+        return false;
+    }
 }
 
 // -------- CODICE GLOBALE

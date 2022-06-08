@@ -29,7 +29,7 @@ $esitoFriends = getUserFriends($id);
             <?php if($esito->num_rows > 0) { ?>
             <table id="table_frndreq" class="color_on_secondary">
                 <tr>
-                    <th>Nome utente</th>
+                    <th>Nome</th>
                     <th>Data di invio</th>
                     <th></th>
                     <th></th>
@@ -38,7 +38,7 @@ $esitoFriends = getUserFriends($id);
                     while ($row = $esito->fetch_assoc()) {
                         ?>
                         <tr id="frndreq<?php echo $row['id']; ?>">
-                            <td><?php echo $row["username"]; ?></td>
+                            <td><a href="./page.php?username=<?php echo $row["username"]; ?>"><?php echo $row["username"]; ?></a></td>
                             <td><?php echo getFormattedDateTime($row["date"]); ?></td>
                             <td><a title="<?php echo $row['id']; ?>" class="frndreq_edit" href="./<?php echo $folder_backend; ?>/editfrndreq.php?req=<?php echo $row["id"]; ?>&code=accept">👍 Accetta</a></td>
                             <td><a title="<?php echo $row['id']; ?>" class="frndreq_edit" href="./<?php echo $folder_backend; ?>/editfrndreq.php?req=<?php echo $row["id"]; ?>&code=reject">👎 Rifiuta</a></td>
@@ -56,7 +56,7 @@ $esitoFriends = getUserFriends($id);
             <?php if($esitoFriends->num_rows > 0) { ?>
                 <table class="color_on_secondary" id="table_friends">
                     <tr>
-                        <th>Nome utente</th>
+                        <th>Nome</th>
                         <th>Inizio amicizia</th>
                         <th></th>
                     </tr>
@@ -64,7 +64,7 @@ $esitoFriends = getUserFriends($id);
                     while ($row = $esitoFriends->fetch_assoc()) {
                         ?>
                         <tr id="friendid<?php echo $row["userid"]; ?>">
-                            <td><?php echo $row["username"]; ?></td>
+                            <td><a href="./page.php?username=<?php echo $row["username"]; ?>"><?php echo $row["username"]; ?></a></td>
                             <td><?php echo getFormattedDateTime($row["date"]); ?></td>
                             <td><a title="<?php echo $row["userid"]; ?>" class="frndreq_del" href="./<?php echo $folder_backend; ?>/delfrnd.php?userid=<?php echo $row["userid"]; ?>">💔 Rimuovi amicizia</a></td>
                         </tr>

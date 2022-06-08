@@ -1,0 +1,8 @@
+.chosenrating {
+    background-color: yellowgreen;
+}
+
+.rating_main::before {
+    content: "\a";
+    white-space: pre;
+}

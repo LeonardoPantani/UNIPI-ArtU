@@ -50,6 +50,8 @@ $esito = $stmt->get_result();
             }
 
             $tags = getTagArray($row["tags"]);
+
+            $ratings = getRatings("content", $row["id"]);
         ?>
         <article class="explore_item bgcolor_secondary">
             <a href="view.php?id=<?php echo $row["id"]; ?>">
@@ -59,6 +61,7 @@ $esito = $stmt->get_result();
                 <div class="explore_item_content">
                     <h4 class="explore_item_contenttitle"><?php echo $row["title"]; ?></h4>
                     <pre class="explore_item_contenttags"><?php if(!empty($tags)) echo getPrintableArray($tags); ?></pre>
+                    <p><b><?php echo $ratings["likes"]; ?></b> 👍 | <b><?php echo $ratings["dislikes"]; ?> 👎</b></p>
                     <p><?php echo getFixedString(getCutString($row["notes"], $content_index_note_maxlength)); ?></p>
                 </div>
             </a>

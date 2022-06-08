@@ -73,12 +73,12 @@ if($esito->num_rows == 1) {
                         <h4>Quale categoria esprime meglio ciò che state creando?</h4>
                         <select class="create_input" name="content_category" id="content_category" required>
                             <option value="">Specificare un categoria...</option>
-                            <option value="photo">Foto</option>
-                            <option value="video">Video</option>
-                            <option value="drawing">Dipinto</option>
-                            <option value="music">Musica</option>
-                            <option value="text">Testo</option>
-                            <option value="poetry">Poesia</option>
+                            <option value="photo">📸 Foto</option>
+                            <option value="video">📹 Video</option>
+                            <option value="drawing">🎨 Dipinto</option>
+                            <option value="music">🎵 Musica</option>
+                            <option value="text">✏ Testo</option>
+                            <option value="poetry">📜 Poesia</option>
                         </select>
 
                         <h4>Titolo</h4>

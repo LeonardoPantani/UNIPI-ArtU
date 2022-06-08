@@ -64,7 +64,7 @@ require_once($folder_include . "/navbar.php");
                     </span>
                 </p>
                 <!--<a href="./page.php?username=<?php echo $username; ?>">📃 Andate alla vostra pagina del profilo pubblica</a><br>-->
-                <a href="./editpage.php">🔧 Cambiare pagina profilo</a>
+                <a href="./editpage.php">🔧 Cambia pagina profilo</a>
             </div>
             <hr>
             <div>

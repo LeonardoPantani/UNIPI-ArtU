@@ -4,7 +4,7 @@
  */
 $service_name = "ArtU";
 $service_motto = "Fai qualcosa di straordinario";
-$service_version = "20220606";
+$service_version = "20220608";
 $defaultavatar_file = "default.jpg";
 $defaultcontent_file = "default.jpg";
 
@@ -17,9 +17,11 @@ $db_dbname = "esame";
 
 $table_users = "users";
 $table_usercontent = "usercontent";
+$table_usercontent_ratings = "usercontent_ratings";
 $table_friends = "friends";
 $table_friendrequests = "friendrequests";
 $table_pages = "pages";
+$table_pages_ratings = "page_ratings";
 
 $folder_backend = "backend";
 $folder_include = "include";

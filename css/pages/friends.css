@@ -9,13 +9,12 @@ td, th {
     padding: 8px;
 }
 
-tr:nth-child(even) {
-    background-color: var(--secondary)
-}
-tr:nth-child(odd) {
-    background-color: var(--secondary_variant)
+tr {
+    background-color: var(--secondary_variant);
+    color: var(--onsecondary);
 }
 
-td > a {
-    color: var(--onsecondary)
+tr:nth-child(1) {
+    background-color: var(--secondary);
+    color: var(--onsecondary);
 }

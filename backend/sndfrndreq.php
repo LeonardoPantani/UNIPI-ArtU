@@ -15,7 +15,7 @@ if($id == $_GET["userid"]) {
     return;
 }
 
-if(amIFriendOf($id, $_GET["userid"])) {
+if(amIFriendOf($_GET["userid"])) {
     echo _("Siete già amici.");
     return;
 }

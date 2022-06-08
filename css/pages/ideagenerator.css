@@ -1,0 +1,17 @@
+section.slots {
+    display: flex;
+    justify-content: space-around;
+    border-radius: 15px;
+    background-color: #FAFAFA;
+    padding: 20px;
+}
+.icons {
+    font-size: 30px;
+    text-align: center;
+    margin:10px;
+    color:black;
+}
+
+#button_generate {
+    margin-top: 1em;
+}

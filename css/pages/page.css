@@ -1,3 +1,11 @@
 #userpage {
     margin: 2em;
 }
+
+#content {
+    background-color: var(--primary_variant);
+}
+
+#content p {
+    color: var(--onprimary)
+}
