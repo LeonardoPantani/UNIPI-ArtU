@@ -7,3 +7,5 @@
 
 
 </html>
+
+<?php if(isset($dbconn)) $dbconn->close(); ?>
