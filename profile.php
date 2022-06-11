@@ -12,7 +12,12 @@ require_once($folder_include . "/head.php"); ?>
 <script src="<?php echo $folder_scripts; ?>/profile.js"></script>
 <?php
 require_once($folder_include . "/navbar.php");
+
+$pendingfriendrequests = getNumPendingFriendRequests($id);
 ?>
+<style>
+
+</style>
 
 <main class="main_content">
     <p id="username" class="gone"><?php echo $username; ?></p>
@@ -22,11 +27,10 @@ require_once($folder_include . "/navbar.php");
         <div class="flex_item bgcolor_primary color_on_primary">
             <div class="flex_container">
                 <div class="flex_item flexratio_40 color_on_primary textalign_end">
-                    <div id="avatar_main">
-                        <div id="avatar_overlay" class="color_on_primary invisible">
-                            <button id="avatar_deletebutton" class="button bgcolor_secondary color_on_secondary" type="button">Elimina</button>
-                        </div>
-                        <img id="avatar_edit" class="avatar avatar_big" src="<?php echo "./" . $folder_avatars . "/" . $avataruri; ?>" title="Cliccate per cambiare"  alt="Immagine profilo"/>
+                    <div id="avatar_container">
+                        <img class="avatar avatar_big" src="<?php echo "./" . $folder_avatars . "/" . $avataruri; ?>"   alt="Immagine profilo"/>
+                        <img id="avatar_edit" class="avatar avatar_big" src="<?php echo "./" . $folder_media . "/setprofileimage.jpg"; ?>" title="Cliccate per cambiare"  alt="Immagine profilo"/>
+                        <button id="avatar_deletebutton" class="button bgcolor_secondary color_on_secondary avatar_delete invisible" type="button">Elimina</button>
                     </div>
                     <div id="chngimg_div" class="gone">
                         <form id="chngimg_form" enctype="multipart/form-data" action="./<?php echo $folder_backend; ?>/chngimg.php" method="POST">
@@ -36,12 +40,11 @@ require_once($folder_include . "/navbar.php");
                     </div>
                 </div>
                 <div class="flex_item flexratio_60 color_on_primary textalign_start bold">
-                    <h1>Che piacere rivedervi, <a title="Aprite la tua pagina pubblica" target="_blank" href="./page.php?username=<?php echo $username; ?>"><span class="color_info"><?php echo $username; ?></span></a>!</h1>
+                    <h1>Che piacere rivederti, <a title="Aprite la tua pagina pubblica" target="_blank" href="./page.php?username=<?php echo $username; ?>"><span class="color_info"><?php echo $username; ?></span></a>!</h1>
                     <p>
                     <?php
-                        $pendingfriendrequests = getNumPendingFriendRequests($id);
                         if($pendingfriendrequests > 0) {
-                            ?><a href="friends.php">📫 Avete <?php echo $pendingfriendrequests; ?> richiesta(e) in attesa. Cliccate per vedere</a><?php
+                            ?><a href="friends.php">📫 Hai <?php echo $pendingfriendrequests; ?> richiesta(e) in attesa. Clicca per vedere</a><?php
                         } else {
                             ?><a href="friends.php">📪 (<?php echo getFriendsNumber($id); ?>) Scheda Amici</a><?php
                         }
@@ -63,7 +66,6 @@ require_once($folder_include . "/navbar.php");
                         } ?>
                     </span>
                 </p>
-                <!--<a href="./page.php?username=<?php echo $username; ?>">📃 Andate alla vostra pagina del profilo pubblica</a><br>-->
                 <a href="./editpage.php">🔧 Cambia pagina profilo</a>
             </div>
             <hr>
@@ -71,8 +73,8 @@ require_once($folder_include . "/navbar.php");
                 <h2>🔑 Cambia password</h2>
                 <form id="chngpswd_form" autocomplete="off" action="./<?php echo $folder_backend; ?>/chngpswd.php" method="POST">
                     <input autocomplete="new-password" type="password" id="oldpassword" name="oldpassword" placeholder="Vecchia password"><br>
-                    <input autocomplete="new-password" type="password" id="newpassword" name="newpassword" placeholder="Nuova password">
-                    <br><br>
+                    <input autocomplete="new-password" type="password" id="newpassword" name="newpassword" placeholder="Nuova password"><br>
+
                     <input id="chngpswd_submitform" type="submit" value="Cambia password" class="button bgcolor_secondary color_on_secondary" disabled />
 
                     <p id="chngpswd_warning" class="color_warning gone"></p>
@@ -84,7 +86,7 @@ require_once($folder_include . "/navbar.php");
                 <div class="flex_container">
                     <div class="flex_item flexratio_50 textalign_start">
                         <h3 class="color_important uppercase">👻 Cambia visibilità</h3>
-                        <p>In modalità privata la pagina non sarà visibile al pubblico. Potrete continuare a navigare su <b><?php echo $service_name; ?></b>. In modalità pubblica, tutti potranno vedere la vostra pagina.</p>
+                        <p>In modalità privata la pagina non sarà visibile al pubblico. Potrai continuare a navigare su <b><?php echo $service_name; ?></b>. In modalità pubblica, tutti potranno vedere la tua pagina.</p>
                     </div>
 
                     <div class="flex_item flexratio_50">
@@ -92,8 +94,8 @@ require_once($folder_include . "/navbar.php");
 
                         <div id="chngprofvis_div" class="gone">
                             <form id="chngprofvis_form" autocomplete="off" action="./<?php echo $folder_backend; ?>/chngprofvis.php" method="POST">
-                                <h4>Scrivete il vostro nome utente e premi su <span class="color_info">Cambia visibilità</span></h4>
-                                <input type="text" id="chngprofvis_text" name="chngprofvis_text" placeholder="Qual è il vostro nome utente?"><br>
+                                <h4>Scrivi il tuo nome utente e premi su <span class="color_info">Cambia visibilità</span></h4>
+                                <input type="text" id="chngprofvis_text" name="chngprofvis_text" placeholder="Qual è il tuo nome utente?"><br>
                                 <br>
                                 <input id="chngprofvis_cancel" type="button" value="Annulla" class="button bgcolor_secondary color_on_secondary" />
                                 <input id="chngprofvis_submitform" type="submit" value="Cambia visibilità" class="button bgcolor_secondary color_on_secondary" disabled />
@@ -107,15 +109,15 @@ require_once($folder_include . "/navbar.php");
                 <div class="flex_container">
                     <div class="flex_item flexratio_50 textalign_start">
                         <h3 class="color_important uppercase">🧨 Elimina account</h3>
-                        <p>ATTENZIONE: questa operazione non è reversibile. Forse vorreste cambiare la visibilità del vostro profilo? Se invece desiderate davvero eliminare l'account, seguire la procedura.</p>
+                        <p>ATTENZIONE: questa operazione non è reversibile. Forse vorresti cambiare la visibilità del tuo profilo? Se invece desideri davvero eliminare l'account, segui la procedura.</p>
                     </div>
 
                     <div class="flex_item flexratio_50">
                         <button id="delacc_button" name="delacc_button" class="button bgcolor_secondary color_on_secondary">Inizia eliminazione</button>
                         <div id="delacc_div" class="gone">
                             <form id="delacc_form" autocomplete="off" action="./<?php echo $folder_backend; ?>/delacc.php" method="POST">
-                                <h4>Scrivete il vostro nome utente e premi su <span class="color_info">Elimina account</span></h4>
-                                <input type="text" id="delacc_text" name="delacc_text" placeholder="Qual è il vostro nome utente?"><br>
+                                <h4>Scrivi il tuo nome utente e premi su <span class="color_info">Elimina account</span></h4>
+                                <input type="text" id="delacc_text" name="delacc_text" placeholder="Qual è il tuo nome utente?"><br>
                                 <br>
                                 <input id="delacc_cancel" type="button" value="Annulla" class="button bgcolor_secondary color_on_secondary" />
                                 <input id="delacc_submitform" type="submit" value="Elimina account" class="button bgcolor_secondary color_on_secondary" disabled />

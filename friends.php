@@ -5,14 +5,13 @@ $tags = "photo, video, drawing, music";
 require_once("config/config.php");
 require_once($folder_include . "/functions.php");
 require_once($folder_include . "/dbconn.php");
+kickGuestUser();
 // da qui in poi viene aggiunto output alla pagina HTML...
 require_once($folder_include . "/head.php"); ?>
 <script src="<?php echo $folder_scripts; ?>/friends.js"></script>
 <link rel="stylesheet" href="<?php echo $folder_css; ?>/pages/friends.css">
 <?php
 require_once($folder_include . "/navbar.php");
-
-kickGuestUser();
 
 $stmt = $dbconn->prepare("SELECT $table_friendrequests.*, $table_users.username FROM $table_friendrequests JOIN $table_users ON userida = $table_users.id WHERE useridb = ? AND status = 'pending'");
 $stmt->bind_param("i", $id);
@@ -24,7 +23,7 @@ $esitoFriends = getUserFriends($id);
 
 <main class="main_content">
     <div class="flex_container">
-        <div class="flex_item width_50 bgcolor_primary color_on_primary">
+        <div class="flex_item bgcolor_primary color_on_primary">
             <h1>Richieste di amicizia</h1>
             <?php if($esito->num_rows > 0) { ?>
             <table id="table_frndreq" class="color_on_secondary">
@@ -75,8 +74,8 @@ $esitoFriends = getUserFriends($id);
             <?php } else { ?>
                 <p>Niente da mostrare.</p>
             <?php } ?>
-            <br>
-            <a href="./profile.php">🔙 Tornate al profilo</a>
+
+            <?php print_goBackSection("profile.php"); ?>
         </div>
     </div>
 </main>

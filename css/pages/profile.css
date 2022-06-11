@@ -1,19 +1,30 @@
 #avatar_edit {
-    filter: none;
+    opacity: 0;
+    position: absolute;
+    top: 0;
+    left: 0;
 }
 
 #avatar_edit:hover {
-    filter: grayscale(100%);
+    opacity: 0.5;
     cursor: pointer;
 }
 
-#avatar_main {
+#avatar_deletebutton {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+}
+
+#avatar_container {
     position: relative;
     display: inline-block;
 }
 
-#avatar_overlay {
-    position: absolute;
-    right: 0;
-    z-index: 5;
+#chngpswd_submitform {
+    margin-top: 1em;
+}
+
+input[type="password"] {
+    width:50%;
 }

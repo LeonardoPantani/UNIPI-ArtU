@@ -1,66 +1,44 @@
-.navbar_list {
-    margin: 0;
-    padding: 0;
-    overflow: hidden;
-    position: sticky;
-    top: 0;
+nav {
+    width: 100%;
+    overflow: auto;
 }
 
-.navbar_left img {
-    max-height: 1.5em;
-}
-
-.navbar_list a {
+nav > * {
+    padding: 1em;
+    color: white;
     text-decoration: none;
-    color: inherit;
-    font-style: normal;
+    font-size: 1em;
+    font-weight: bold;
 }
 
-/* sinistra */
 .navbar_left {
     float: left;
 }
 
-.navbar_left > * {
-    float: left;
-    text-align: center;
-    padding: 14px 16px;
-    font-weight: bold;
-}
-
-.navbar_left a:hover {
-    background-color: #111;
-    opacity: 0.4;
-}
-
-/* destra */
 .navbar_right {
     float: right;
 }
 
-.navbar_right > * {
-    float:left;
-    text-align: center;
-    vertical-align: middle;
-    padding: 14px 16px;
-    font-weight: bold;
-}
-
-.navbar_right > a:hover {
-    background-color: #111;
-    opacity: 0.4;
-}
-
-/* altro */
-#navbar_datetime {
-    color: lightgray;
-    font-weight: bold;
-}
-
-#navbar_avatar {
-    padding: 0 12px;
+nav a:hover  {
+    background-color: #000;
 }
 
 .active {
     background-color: #04AA6D;
+}
+
+@media screen and (max-width: 1000px) {
+    nav > * {
+        float: none;
+        display: block;
+    }
+}
+
+#navbar_datetime {
+    color: lightgray;
+    font-weight: normal;
+}
+
+.navbar_nopadding {
+    padding: 0.25em 1em !important;
 }

@@ -4,7 +4,7 @@
  */
 $service_name = "ArtU";
 $service_motto = "Fai qualcosa di straordinario";
-$service_version = "20220608";
+$service_version = "20220611";
 $defaultavatar_file = "default.jpg";
 $defaultcontent_file = "default.jpg";
 
@@ -18,6 +18,7 @@ $db_dbname = "esame";
 $table_users = "users";
 $table_usercontent = "usercontent";
 $table_usercontent_ratings = "usercontent_ratings";
+$table_usercontent_comments = "usercontent_comments";
 $table_friends = "friends";
 $table_friendrequests = "friendrequests";
 $table_pages = "pages";
@@ -30,12 +31,18 @@ $folder_css = "css";
 $folder_scripts = "scripts";
 $folder_media = "media";
 
+$username_regex = '^\w{6,20}$';
+$password_minlength = 6;
+
 $time_between_publications = 0; // in secondi, tempo minimo tra una pubblicazione e l'altra
+
+$time_between_comments = 0; // in secondi, tempo minimo tra un commento e l'altro
 
 $content_index_note_maxlength = 150;
 
 $content_page_maxlength = 5000;
 $content_text_view_maxlength = 3000;
+$comment_maxlength = 500;
 
 // massimi tag 30, lunghezza totale singolo tag 20, con aggiunto virgola e spazio 22, totale: 660 caratteri possibili (700 nel database per sicurezza)
 $content_tag_maxlength = 20;
@@ -53,7 +60,7 @@ $content_tag_maxnumber = 30;
     graficamente visibile su:
     https://jex.im/regulex/#!embed=true&flags=&re=%5E%5Ba-zA-Z_%5D%2B(%3F%3D(%2C%3F%5Cs*))(%3F%3A%5C1%5Ba-zA-Z_%5D%2B)%2B%24
  */
-$content_tag_regex = "^[a-zA-Z_]+(?=(,?\\s*))(?:\\1[a-zA-Z_]+)+$";
+$content_tag_regex = '^[a-zA-Z_]+(?=(,?\s*))(?:\1[a-zA-Z_]+)+$';
 
 /*
  * Questa regex consente i seguenti caratteri:

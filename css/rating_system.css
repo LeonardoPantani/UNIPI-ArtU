@@ -1,8 +1,7 @@
-.chosenrating {
+.chosenrating#like_button {
     background-color: yellowgreen;
 }
 
-.rating_main::before {
-    content: "\a";
-    white-space: pre;
+.chosenrating#dislike_button {
+    background-color: indianred;
 }

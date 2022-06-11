@@ -19,7 +19,7 @@ if(!in_array($category, $usercontent_types)) {
 }
 
 // valido il titolo
-$content_title = $_POST["content_title"];
+$content_title = trim(htmlspecialchars($_POST["content_title"]));
 if(strlen($content_title) > $content_title_maxlength) {
     echo _("Titolo troppo lungo. Lunghezza massima: " . $content_title_maxlength);
     return;
@@ -69,12 +69,12 @@ if($_FILES["content_thumbnail"]["error"] == 0) {
 // valido i tags (se ci sono)
 $content_tags = "";
 if($_POST["content_tags"] != "") {
-    if(!preg_match('/^[a-zA-Z_]+(?=(,?\s*))(?:\1[a-zA-Z_]+)+$/', $_POST["content_tags"])) {
+    if(!preg_match('/'.$content_tag_regex.'/', $_POST["content_tags"])) {
         echo _("Formato tag non valido.");
         return;
     }
 
-    $trimmedtags = trim(str_replace(" ", "", $_POST["content_tags"]));
+    $trimmedtags = trim(htmlspecialchars(str_replace(" ", "", $_POST["content_tags"])));
     $tagslist = explode(",", $trimmedtags);
 
     if(sizeof($tagslist) > $content_tag_maxnumber) {

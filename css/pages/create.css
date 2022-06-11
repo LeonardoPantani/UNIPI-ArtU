@@ -17,24 +17,6 @@
     cursor: pointer;
 }
 
-.test-control-wrapper {
-    display: flex;
-    align-items: center;
-}
-
-.test-control {
-    margin-left: 5px;
-}
-
-.flexitem_arrow_next {
-    align-self: flex-start;
-}
-
 .create_input {
     width: 75%;
-}
-
-.arrow_icon {
-    text-align: center;
-    margin: 0;
 }

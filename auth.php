@@ -22,36 +22,40 @@ require_once($folder_include . "/head.php"); ?>
     </div>
 
     <div class="flex_container width_50 align_center">
-        <div id="dialog" class="flex_item flexratio_50 bgcolor_error color_on_error gone">
+        <div id="dialog" class="flex_item bgcolor_error color_on_error gone">
             <p id="dialog_text"></p>
         </div>
     </div>
 
     <div class="flex_container width_50 align_center">
+        <div class="flex_item bgcolor_primary bgcolor_secondary textalign_start">
+            <h3 class="textalign_center">Restrizioni</h3>
+            <ul>
+                <li>Username ➡ tra i 6 e i 20 caratteri, accettati: lettere, numeri, trattini bassi</li>
+                <li>Password ➡ almeno 6 caratteri</li>
+            </ul>
+        </div>
+    </div>
+
+    <p id="usernameregex" class="gone"><?php echo $username_regex; ?></p>
+    <div class="flex_container width_50 align_center">
         <div class="flex_item flexratio_50 bgcolor_primary color_on_primary">
-            <h1>🍀 Registratevi</h1>
+            <h1>🍀 Registrati</h1>
             <form class="form_auth" autocomplete="off" action="./<?php echo $folder_backend; ?>/dbauth.php" method="POST">
-                <input type="text" name="username" placeholder="Nome utente"><br>
-
-                <input type="email" name="email" placeholder="Email"><br>
-
-                <input type="password" name="password" placeholder="Password"><br>
-
-                <input type="password" name="repeatpassword" placeholder="Ripeti password">
-                <br><br>
-                <input type="submit" value="Registrazione" class="button bgcolor_secondary color_on_secondary">
-                <p><small>Registrandovi accettate l'<a target="_blank" href="<?php echo "./legal.php?doc=pp"; ?>">informativa sulla privacy</a> di <b><?php echo $service_name; ?></b>.</small></p>
+                <input type="text" class="register_validation" id="register_username" name="username" placeholder="Nome utente" pattern="<?php echo $username_regex; ?>" required /><br>
+                <input type="email" class="register_validation" id="register_email"  name="email" placeholder="Email" required /><br>
+                <input type="password" class="register_validation" id="register_password" name="password" placeholder="Password" minlength="<?php echo $password_minlength; ?>" required /><br>
+                <input type="password" class="register_validation" id="register_repeatpassword" name="repeatpassword" placeholder="Ripeti password" minlength="<?php echo $password_minlength; ?>" required /><br>
+                <input type="submit" id="register_submit" value="Registrazione" class="button bgcolor_secondary color_on_secondary" disabled>
+                <p><small>Registrandoti accetti l'<a target="_blank" href="<?php echo "./legal.php?doc=pp"; ?>">informativa sulla privacy</a> e i <a target="_blank" href="<?php echo "./legal.php?doc=tos"; ?>">Termini di Servizio</a> di <b><?php echo $service_name; ?></b>.</small></p>
             </form>
         </div>
         <div class="flex_item flexratio_50 bgcolor_primary color_on_primary">
-            <h1>🍁 Accedete</h1>
+            <h1>🍁 Accedi</h1>
             <form class="form_auth" autocomplete="on" action="./<?php echo $folder_backend; ?>/dbauth.php" method="POST">
-                <input type="text" name="access" placeholder="Nome utente o Email"><br>
-
-                <input type="password" name="password" placeholder="Password"><br>
-
-                <br>
-                <input type="submit" value="Login" class="button bgcolor_secondary color_on_secondary">
+                <input type="text" class="login_validation" id="login_access" name="access" placeholder="Nome utente o Email" required><br>
+                <input type="password" class="login_validation" id="login_password" name="password" placeholder="Password" minlength="<?php echo $password_minlength; ?>" required><br>
+                <input type="submit" id="login_submit" value="Login" class="button bgcolor_secondary color_on_secondary" disabled>
             </form>
         </div>
     </div>

@@ -1,4 +1,7 @@
 $(function() {
+    let usernameRegex = new RegExp($("#usernameregex").text());
+
+    // -- INVIO
     $(".form_auth").on("submit", function(e) {
         e.preventDefault();
 
@@ -12,6 +15,46 @@ $(function() {
             }
         }, false);
     });
+
+    $(".register_validation").on("input", function() {
+        if(!validateRegistration()) {
+            $("#register_submit").prop("disabled", true);
+        } else {
+            $("#register_submit").prop("disabled", false);
+        }
+    });
+
+    function validateRegistration() {
+        // controllo username
+        if(!usernameRegex.test($("#register_username").val())) {
+            return false;
+        }
+
+        // controlli vari password
+        let registerPassword = $("#register_password");
+        if(registerPassword.val().length < Number.parseInt(registerPassword.attr("minlength"))) {
+            return false;
+        }
+        return registerPassword.val() === $("#register_repeatpassword").val();
+
+
+    }
+
+    $(".login_validation").on("input", function() {
+        if(!validateLogin()) {
+            $("#login_submit").prop("disabled", true);
+        } else {
+            $("#login_submit").prop("disabled", false);
+        }
+    });
+
+    function validateLogin() {
+        // viene controllata solo la password
+        let loginPassword = $("#login_password");
+        return loginPassword.val().length >= Number.parseInt(loginPassword.attr("minlength"));
+
+
+    }
 
     setInterval(function() {
         changeImageCover();

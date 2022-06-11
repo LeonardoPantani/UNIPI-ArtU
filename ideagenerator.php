@@ -15,14 +15,14 @@ require_once($folder_include . "/head.php"); ?>
     <div class="flex_container">
         <div class="flex_item bgcolor_primary color_on_primary">
             <h1><?php echo $title; ?></h1>
-            <cite><?php echo $service_motto; ?></cite>
-            <br><i class="arrow down arrow_small"></i>
+            <p>Seleziona un categoria dal menù a tendina sottostante e premi <b>🧙‍♂️Inizia</b> per ottenere un'idea casuale.</p>
+            <div class="arrow down arrow_small"></div>
         </div>
     </div>
 
     <div class="flex_container">
         <div class="flex_item bgcolor_primary color_on_primary">
-            <div class="width_75" style="margin: auto;">
+            <div class="generator_main">
                 <section class="slots">
                     <div id="slot1" class="icons">❓</div>
                     <div id="slot2" class="icons">❔</div>
@@ -37,7 +37,7 @@ require_once($folder_include . "/head.php"); ?>
                         <option value="text">✏ Testo</option>
                         <option value="poetry">📜 Poesia</option>
                     </select>
-                    <input type="submit" id="button_generate" class="button bgcolor_secondary color_on_secondary" value="🧙‍♂ Inizia" disabled />
+                    <input type="submit" id="button_generate" class="button bgcolor_secondary color_on_secondary" value="🧙‍♂ Inizia" />
                 </form>
             </div>
         </div>

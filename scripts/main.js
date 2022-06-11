@@ -28,18 +28,6 @@ function updateClock() {
     setTimeout(updateClock, 1000);
 }
 
-function validateUsername(username) {
-    if(!username.match('/^\w{6,}$/')) return false;
-
-    return true;
-}
-
-function validatePassword(password) {
-    if(password.length < 6) return false;
-
-    return true;
-}
-
 /**
  * Invia un form via XHR all'indirizzo specificato
  * @param actionURL url su cui inviare il form
@@ -69,6 +57,21 @@ function sendAjax(actionURL, form, onFinish, sendingFile) {
                 onFinish(result);
             }
         });
+    }
+}
+
+/**
+ * Mostra o nasconde il testo "non valido" su un paragrafo.
+ * @param where dove mostrare l'errore
+ * @param error se mostrare o nascondere l'errore
+ */
+function showInvalidWarning(where, error) {
+    if(error) {
+        where.addClass("color_error")
+        where.text("Non valido")
+    } else {
+        where.removeClass("color_error")
+        where.text("")
     }
 }
 

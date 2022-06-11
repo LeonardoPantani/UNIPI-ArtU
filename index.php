@@ -11,63 +11,49 @@ require_once($folder_include . "/head.php"); ?>
 <script src="<?php echo $folder_scripts; ?>/index.js"></script>
 <?php
 require_once($folder_include . "/navbar.php");
+// paginazione
+$paginationNumber = 5; // TODO rendere configurabile
+$stmt = $dbconn->prepare("SELECT max(id) as maxid FROM $table_usercontent ORDER BY id DESC LIMIT 1");
+$stmt->execute();
+$esito = $stmt->get_result();
+$maxContentId = $esito->fetch_assoc()["maxid"];
+
+if(!isset($_GET["id"])) {
+    $maxid = $maxContentId;
+} else {
+    $maxid = $_GET["id"];
+}
+$pagPrev = $maxid + $paginationNumber;
+$pagNext = $maxid - $paginationNumber;
+
 // ottengo tutti i contenuti degli utenti pubblici
-$stmt = $dbconn->prepare("SELECT $table_usercontent.*, $table_users.username FROM $table_usercontent JOIN $table_users ON $table_usercontent.userid = $table_users.id WHERE private = 0 ORDER BY creationDate DESC");
+$stmt = $dbconn->prepare("SELECT $table_usercontent.*, $table_users.username FROM $table_usercontent JOIN $table_users ON $table_usercontent.userid = $table_users.id WHERE $table_usercontent.id <= ? AND $table_usercontent.private = 0 ORDER BY id DESC LIMIT ?");
+$stmt->bind_param("ii", $maxid, $paginationNumber);
 $stmt->execute();
 $esito = $stmt->get_result();
 ?>
 
 <main class="main_content">
     <div class="flex_container">
-        <div class="flex_item width_50 bgcolor_primary color_on_primary">
+        <div class="flex_item bgcolor_primary color_on_primary">
             <h1><?php echo $title; ?></h1>
-            <cite><?php echo $service_motto; ?></cite>
-            <br><i class="arrow down arrow_small"></i>
+            <p>Qui sono mostrati i contenuti della community. I contenuti marcati come privati non sono visibili.</p>
+            <div class="arrow down arrow_small"></div>
         </div>
     </div>
 
-    <section class="explore_container">
-        <?php
-        while($row = $esito->fetch_assoc()) {
-            $fileCategory = getContentFolderByCategory($row["type"]);
-            $fileName = $row["id"] . "." . $row["contentExtension"];
-            $filePath = $fileCategory . "/" . $fileName;
+    <div class="explore_container textalign_center">
+        <?php print_contents($esito); ?>
+    </div>
 
-            $thumbnailPath = "";
-            if($row["thumbnailExtension"] != "") {
-                $thumbnailName = $row["id"] . "." . $row["thumbnailExtension"];
-                $thumbnailPath = getContentFolderByCategory("thumbnail") . "/" . $thumbnailName;
-            }
-
-            if($thumbnailPath != "" || in_array($row["type"], $usercontent_directlyviewable)) {
-                if($thumbnailPath != "") {
-                    $finalSource = $thumbnailPath;
-                } else {
-                    $finalSource = $filePath;
-                }
-            } else {
-                $finalSource = $fileCategory . "/" . $defaultcontent_file;
-            }
-
-            $tags = getTagArray($row["tags"]);
-
-            $ratings = getRatings("content", $row["id"]);
-        ?>
-        <article class="explore_item bgcolor_secondary">
-            <a href="view.php?id=<?php echo $row["id"]; ?>">
-                <picture class="explore_item_imagecontainer">
-                    <img class="explore_item_image" src="<?php echo $finalSource; ?>" alt="Immagine risorsa" />
-                </picture>
-                <div class="explore_item_content">
-                    <h4 class="explore_item_contenttitle"><?php echo $row["title"]; ?></h4>
-                    <pre class="explore_item_contenttags"><?php if(!empty($tags)) echo getPrintableArray($tags); ?></pre>
-                    <p><b><?php echo $ratings["likes"]; ?></b> 👍 | <b><?php echo $ratings["dislikes"]; ?> 👎</b></p>
-                    <p><?php echo getFixedString(getCutString($row["notes"], $content_index_note_maxlength)); ?></p>
-                </div>
-            </a>
-        </article>
-    <?php } ?>
-    </section>
+    <div class="textalign_center">
+        <?php if($pagPrev <= $maxContentId) { ?>
+            <button onClick="redirect('./?id=<?php echo $pagPrev; ?>');" class="button bgcolor_primary color_on_primary">⏪ Precedenti</button>
+        <?php }
+        if($pagNext > 0) { ?>
+            <button onClick="redirect('./?id=<?php echo $pagNext; ?>');" class="button bgcolor_primary color_on_primary">⏩ Successivi</button>
+        <?php } ?>
+    </div>
 </main>
 
 <?php require_once($folder_include . "/footer.php"); ?>

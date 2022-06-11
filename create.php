@@ -38,14 +38,14 @@ if($esito->num_rows == 1) {
 <main class="main_content">
     <?php if(!$canCreate) { ?>
         <div class="flex_container">
-            <div class="flex_item width_50 bgcolor_error color_on_error">
+            <div class="flex_item bgcolor_error color_on_error">
                 <h2>Tempo rimasto alla prossima pubblicazione</h2>
                 <h1><?php echo getFormattedTime($timeBeforeNextPublication); ?></b></h1>
                 <p>
-                    Grazie per voler pubblicare le tue creazioni ma, per evitare spam di contenuti, è previsto un timer tra una pubblicazione e l'altra.
+                    Grazie per voler pubblicare le tue creazioni ma, per evitare spam di contenuti,
+                    è previsto un timer tra una pubblicazione e l'altra.
                 </p>
-                <br>
-                <a href="./">🔙 Tornate alla homepage</a>
+                <?php print_goBackSection(); ?>
             </div>
         </div>
     <?php } else { ?>
@@ -55,14 +55,16 @@ if($esito->num_rows == 1) {
         <p id="tagmaxlength" class="gone"><?php echo $content_tag_maxlength; ?></p>
         <p id="tagmaxnumber" class="gone"><?php echo $content_tag_maxnumber; ?></p>
         <p id="tagregex" class="gone"><?php echo $content_tag_regex; ?></p>
+        <p id="maxcontentsize" class="gone"><?php echo $content_file_maxsize; ?></p>
+        <p id="maxthumbnailsize" class="gone"><?php echo $content_thumbnail_maxsize; ?></p>
 
         <form id="uploadcontent_form" enctype="multipart/form-data" action="./<?php echo $folder_backend; ?>/uploadcontent.php" method="POST">
             <div id="intro" class="flex_container">
                 <div class="flex_item bgcolor_primary color_on_primary">
                     <h1><?php echo $title; ?></h1>
-                    <cite><?php echo $service_motto; ?></cite>
-
-                    <div class="arrow_icon"><i class="arrow down arrow_small"></i></div>
+                    <p>Ti diamo il benvenuto nella schermata per aggiungere un contenuto alla piattaforma.
+                        I passaggi successivi compariranno man mano che i campi vengono compilati.</p>
+                    <div class="arrow down arrow_small"></div>
                 </div>
             </div>
 
@@ -70,9 +72,9 @@ if($esito->num_rows == 1) {
                 <div id="step1" class="flex_item flex_container step_container bgcolor_primary color_on_primary">
                     <div class="flex_item step_item">
                         <h2>Passaggio 1</h2>
-                        <h4>Quale categoria esprime meglio ciò che state creando?</h4>
+                        <h4>Quale categoria esprime meglio ciò che stai creando?</h4>
                         <select class="create_input" name="content_category" id="content_category" required>
-                            <option value="">Specificare un categoria...</option>
+                            <option value="">Specifica un categoria...</option>
                             <option value="photo">📸 Foto</option>
                             <option value="video">📹 Video</option>
                             <option value="drawing">🎨 Dipinto</option>
@@ -82,11 +84,10 @@ if($esito->num_rows == 1) {
                         </select>
 
                         <h4>Titolo</h4>
-                        <div class="test">
-                            <input class="create_input test-control" id="content_title" name="content_title" placeholder="Lunghezza massima: <?php echo $content_title_maxlength; ?> caratteri" required /> <span id="content_title_result"></span>
-                        </div>
+                        <input class="create_input test-control" id="content_title" name="content_title" placeholder="Lunghezza massima: <?php echo $content_title_maxlength; ?> caratteri" maxlength="<?php echo $content_title_maxlength; ?>" pattern="<?php echo $content_title_regex; ?>" required />&nbsp;
+                        <span id="content_title_result"></span>
 
-                        <div class="arrow_icon"><i class="arrow down arrow_small"></i></div>
+                        <div class="arrow down arrow_small"></div>
                     </div>
                 </div>
 
@@ -114,7 +115,7 @@ if($esito->num_rows == 1) {
                         <p>Tipi di file accettati: <code id="accepted_types_thumbnail"></code></p>
                         <p>Dimensione massima: <code><?php echo $content_thumbnail_maxsize / 1000000; ?>MB</code></p>
 
-                        <div class="arrow_icon"><i class="arrow down arrow_small"></i></div>
+                        <div class="arrow down arrow_small"></div>
                     </div>
                 </div>
 
@@ -123,7 +124,7 @@ if($esito->num_rows == 1) {
                         <h2>Passaggio 3</h2>
                         <h4>Tags</h4>
                         <div class="test">
-                            <input class="create_input test-control" type="text" id="content_tags" name="content_tags" placeholder="tag1, tag2, tag3, ..."  maxlength="<?php echo $content_note_maxlength; ?>" /> <span id="content_tags_result"></span>
+                            <input class="create_input test-control" type="text" id="content_tags" name="content_tags" placeholder="tag1, tag2, tag3, ..."  maxlength="<?php echo $content_note_maxlength; ?>" pattern="<?php echo $content_tag_regex; ?>" /> <span id="content_tags_result"></span>
                         </div>
                         <h4>Note</h4>
                         <textarea class="create_input" id="content_notes" name="content_notes" placeholder="Lunghezza massima: <?php echo $content_note_maxlength;?> caratteri" rows="8" maxlength="<?php echo $content_note_maxlength; ?>"></textarea>
@@ -132,14 +133,14 @@ if($esito->num_rows == 1) {
                         <input type="checkbox" id="content_setting_private" name="content_setting_private" value="1">
                         <label for="content_setting_private"> Vorrei che questo contenuto fosse visibile solo a chi mi segue.</label>
 
-                        <div class="arrow_icon"><i class="arrow down arrow_small"></i></div>
+                        <div class="arrow down arrow_small"></div>
                     </div>
                 </div>
 
                 <div id="step4" class="flex_item flex_container step_container step_visibility bgcolor_primary color_on_primary">
                     <div class="flex_item step_item">
                         <h2>Passaggio 4</h2>
-                        <h4>Ricontrollate quello che avete inserito.</h4>
+                        <h4>Ricontrolla quello che hai inserito.</h4>
                         <input type="submit" name="button" class="button" value="📤 Pubblica" />
                         <p>Potrai pubblicare un nuovo contenuto tra <strong><?php echo getFormattedTime($time_between_publications); ?></strong>.</p>
                         <p>Ricorda che tutti i contenuti inviati devono rispettare i <a target="_blank" href="./legal.php?doc=tos">Termini di Servizio.</a></p>

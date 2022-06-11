@@ -15,14 +15,14 @@ $(function() {
     });
 
     if($("#defaulturi").text() === "false") { // ottengo il dato dal campo di testo invisibile settato dal php
-        const avatarmain = $("#avatar_main");
+        const avatarContainer = $("#avatar_container");
 
-        avatarmain.on("mouseenter", function() {
-            $("#avatar_overlay").removeClass("invisible")
+        avatarContainer.on("mouseenter", function() {
+            $("#avatar_deletebutton").removeClass("invisible")
         });
 
-        avatarmain.on("mouseleave", function() {
-            $("#avatar_overlay").addClass("invisible")
+        avatarContainer.on("mouseleave", function() {
+            $("#avatar_deletebutton").addClass("invisible")
         });
 
         $("#avatar_deletebutton").on("click", function() {

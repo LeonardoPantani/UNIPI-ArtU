@@ -1,5 +1,5 @@
 .view_content {
-    max-width: 75vh;
+    max-width: 75vw;
     max-height: 50vh;
     margin-bottom: 1em;
 }
@@ -15,20 +15,24 @@
     color: var(--link);
 }
 
-.downloadcontent::before {
-    content: "\a\a";
-    white-space: pre;
+.comment_section {
+    max-width:50vw;
 }
 
-.chosenrating {
-    background-color: yellowgreen;
+.comment {
+    margin: 5px;
+    border: 2px solid white;
+    padding: 5px;
+
+    overflow:hidden;
+    text-overflow: ellipsis;
+    word-wrap: break-word;
 }
 
-.description {
-    background-color: var(--primary_variant);
-    padding:10px;
+.text {
+    width: 50%;
 }
 
-.description p {
-    color: var(--onprimary)
+#comment_form {
+    margin-bottom: 1em;
 }

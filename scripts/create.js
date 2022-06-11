@@ -9,6 +9,8 @@ let isTagOk = false;
 $(function() {
     let validateTitleInput_regex = new RegExp($("#titleregex").text());
     let validateTagsInput_regex = new RegExp($("#tagregex").text());
+    let maxcontentsize = $("#maxcontentsize").text();
+    let maxthumbnailsize = $("#maxthumbnailsize").text()
 
     /**
      * Ottengo i valori accettati dal backend per il campo input file della thumbnail. Nota. I valori accettati del
@@ -100,10 +102,19 @@ $(function() {
             toggleSteps("mainfile"); // chiamo funzione modifica steps
             clearFileInput();
             alert("Per questa risorsa sono supportati i seguenti formati:\n\n" + acceptedExtensionsFile.join(', '));
-        } else {
-            isContentOk = true;
-            toggleSteps("mainfile"); // chiamo funzione modifica steps
+            return;
         }
+
+        if(file[0].files[0]['size'] > maxcontentsize) {
+            isContentOk = false;
+            toggleSteps("mainfile"); // chiamo funzione modifica steps
+            clearFileInput();
+            alert("Il tuo file è troppo grande. Dovrebbe essere al massimo di " + maxcontentsize / 1000000 + "MB");
+            return;
+        }
+
+        isContentOk = true;
+        toggleSteps("mainfile"); // chiamo funzione modifica steps
     });
 
     /**
@@ -117,6 +128,12 @@ $(function() {
         if ($.inArray(file.val().split('.').pop(), acceptedExtensionsThumbnail) === -1) {
             clearThumbnailInput();
             alert("Per le miniature sono supportati i seguenti formati:\n\n" + acceptedExtensionsThumbnail.join(', '));
+            return;
+        }
+
+        if(file[0].files[0]['size'] > maxthumbnailsize) {
+            clearThumbnailInput();
+            alert("Il tuo file è troppo grande. Dovrebbe essere al massimo di " + maxthumbnailsize / 1000000 + "MB");
         }
     });
 
@@ -193,27 +210,12 @@ $(function() {
     });
 });
 
-/**
- * Mostra o nasconde il testo "non valido" su un paragrafo.
- * @param where dove mostrare l'errore
- * @param error se mostrare o nascondere l'errore
- */
-function showInvalidWarning(where, error) {
-    if(error) {
-        where.addClass("color_error")
-        where.text("Non valido")
-    } else {
-        where.removeClass("color_error")
-        where.text("")
-    }
-}
-
 let reachedStep = 1;
 /**
  * Aggiorna la visibilità degli elementi del form di creazione.
  */
 function toggleSteps(changed) {
-    console.log("changed " + changed);
+    console.log("changed " + changed + " step raggiunti prima: " + reachedStep);
     if(changed === "category") {
         if(isCategoryOk) {
             if(isTitleOk) {
@@ -238,10 +240,11 @@ function toggleSteps(changed) {
 
     if(changed === "mainfile") {
         if(isContentOk) {
-            validateUntil(4);
+            reachedStep = 4;
         } else {
-            validateUntil(2);
+            reachedStep = 2;
         }
+        validateUntil(reachedStep);
     }
 
     if(changed === "tags") {
@@ -252,6 +255,8 @@ function toggleSteps(changed) {
         }
         validateUntil(reachedStep);
     }
+
+    console.log("changed " + changed + " step raggiunti dopo: " + reachedStep);
 }
 
 /**

@@ -8,7 +8,7 @@ if (!isset($_GET["id"])) {
     return;
 }
 
-$usercontent = getUserContentById($_GET["id"]);
+$usercontent = getContentById($_GET["id"]);
 
 header('Content-Type: application/octet-stream');
 header("Content-Transfer-Encoding: Binary");

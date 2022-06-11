@@ -38,7 +38,7 @@ function kickGuestUser($ajax = false, $redirect = "./auth.php")
 {
     if (!isLogged()) {
         if ($ajax) {
-            echo "error_unlogged";
+            echo _("Non hai effettuato il login.");
         } else {
             header("Location:" . $redirect);
         }
@@ -50,7 +50,7 @@ function kickLoggedUser($ajax = false, $redirect = "./")
 {
     if (isLogged()) {
         if ($ajax) {
-            echo "error_logged";
+            echo _("Hai già effettuato il login.");
         } else {
             header("Location:" . $redirect);
         }
@@ -69,8 +69,10 @@ function deleteSession($redirect = "")
 
 function validateUsername($username): bool
 {
-    // accettati: lettere, numeri e trattini bassi | lunghezza minima: 6 caratteri | \w è uguale a "[0-9A-Za-z_]"
-    if (!preg_match('/^\w{6,}$/', $username)) return false;
+    global $username_regex;
+
+    // accettati: lettere, numeri e trattini bassi | lunghezza accettata: tra 6 e 20 caratteri compresi | \w è uguale a "[0-9A-Za-z_]"
+    if (!preg_match('/'. $username_regex .'/', $username)) return false;
 
     return true;
 }
@@ -115,18 +117,10 @@ function getUserIdByUsername($username): int|null
     return $ret["id"];
 }
 
-/**
- * @param id dell'utente di cui si vuole ottenere la pagina
- * @return bool|array|null l'array contenente la pagina se l'id corrisponde, null se non corrisponde niente (l'utente potrebbe non ha mai modificato la pagina o non esiste), falso in caso di errore della query
- */
-function getPageById($userid): array|null
-{
-    global $dbconn, $table_pages, $table_users;
+function getUserPageById($userid): array|null {
+    global $dbconn, $table_users, $table_pages;
 
-    $userid = intval($userid);
-    if($userid == 0) return null;
-
-    $stmt = $dbconn->prepare("SELECT $table_pages.*, $table_users.username, $table_users.avatarUri, $table_users.visibility FROM $table_pages JOIN $table_users ON $table_pages.userid = $table_users.id WHERE userid = ?");
+    $stmt = $dbconn->prepare("SELECT $table_users.*, $table_pages.* FROM $table_users LEFT JOIN $table_pages ON $table_users.id = $table_pages.userid WHERE $table_users.id = ?");
     $stmt->bind_param("i", $userid);
     $stmt->execute();
     $esito = $stmt->get_result();
@@ -143,7 +137,7 @@ function getPageById($userid): array|null
  * @param contentid id del contenuto di un utente
  * @return bool|array|null l'array contenente i dati del content se l'id esiste, null se non corrisponde niente, falso in caso di errore della query
  */
-function getUserContentById($contentid): array|null
+function getContentById($contentid): array|null
 {
     global $dbconn, $table_usercontent, $table_users, $folder_thumbnail;
 
@@ -174,6 +168,25 @@ function getUserContentById($contentid): array|null
         }
     }
     return $ret;
+}
+
+/**
+ * @param userid l'id dell'utente di cui avere i contenuti creati
+ * @return bool|array|null l'array contenente i contenuti dell'utente se l'id esiste, null se non corrisponde niente, falso in caso di errore della query
+ */
+function getUserContent($userid, $private = 0, $limit = 0): mysqli_result|null
+{
+    global $dbconn, $table_usercontent, $table_users;
+
+    $userid = intval($userid);
+    if($userid == 0) return null;
+
+    if($limit == 0) $limitText = ""; else $limitText = "LIMIT $limit";
+
+    $stmt = $dbconn->prepare("SELECT $table_usercontent.*, $table_users.username, $table_users.avatarUri FROM $table_usercontent JOIN $table_users ON $table_usercontent.userid = $table_users.id WHERE $table_usercontent.private = ? AND $table_users.id = ? ORDER BY $table_usercontent.creationDate DESC $limitText");
+    $stmt->bind_param("ii", $private, $userid);
+    $stmt->execute();
+    return $stmt->get_result();
 }
 
 /**
@@ -245,7 +258,7 @@ function getFriendRequestById($friendreqid): bool|array|null
  */
 function amIFriendOf($other): bool
 {
-    global $dbconn, $table_friends;
+    global $id, $dbconn, $table_friends;
 
     if(!isLogged()) return false;
 
@@ -480,6 +493,17 @@ function getUserRating($type, $userid, $elementID) {
     }
 }
 
+function getComments($contentid): bool|mysqli_result
+{
+    global $dbconn, $table_users, $table_usercontent_comments;
+
+    $stmt = $dbconn->prepare("SELECT $table_usercontent_comments.*, $table_users.username, $table_users.avatarURI FROM $table_usercontent_comments JOIN $table_users ON $table_usercontent_comments.userid = $table_users.id WHERE contentid = ? ORDER BY date DESC");
+    $stmt->bind_param("i", $contentid);
+    $stmt->execute();
+
+    return $stmt->get_result();
+}
+
 /**
  * Determina se l'utente attualmente connesso può accedere al contenuto o meno.
  * @param contentid id del contenuto dell'utente a cui si vuole accedere
@@ -489,7 +513,7 @@ function canISeeContent($contentid): bool
 {
     global $id;
 
-    $dati = getUserContentById($contentid);
+    $dati = getContentById($contentid);
     if($dati != null) {
         if($dati["private"] == "0" || (isLogged() && (amIFriendOf($dati["userid"]) || $id == $dati["userid"]))) {
             return true;
@@ -510,9 +534,9 @@ function canISeePage($userpageid): bool
 {
     global $id;
 
-    $dati = getPageById($userpageid);
+    $dati = getUserPageById($userpageid);
     if($dati != null) {
-        if($dati["visibility"] == 1 || (isLogged() && (amIFriendOf($dati["userid"]) || $id == $dati["userid"]))) {
+        if($dati["visibility"] == 1 || (isLogged() && (amIFriendOf($dati["id"]) || $id == $dati["id"]))) {
             return true;
         } else {
             return false;
@@ -520,6 +544,123 @@ function canISeePage($userpageid): bool
     } else {
         return false;
     }
+}
+
+/**
+ * Determina se l'utente può commentare un contenuto.
+ * @param contentid l'id del contenuto da commentare
+ * @return int 0 se può commentare, -1 se non può vedere il contenuto, un numero diverso dai precedenti
+ *              è il tempo passato dall'ultimo commento
+ */
+function canIComment($contentid): int
+{
+    global $id, $dbconn, $table_usercontent_comments, $time_between_comments;
+
+    if(canISeeContent($contentid)) {
+        $stmt = $dbconn->prepare("SELECT date FROM $table_usercontent_comments WHERE userid = ? ORDER BY date DESC LIMIT 1");
+        $stmt->bind_param("i", $id);
+        $stmt->execute();
+        $esito = $stmt->get_result();
+
+        if($esito->num_rows == 0) {
+            return 0;
+        } else {
+            $dati = $esito->fetch_assoc();
+            $currentTime = time();
+
+            if($currentTime - $dati["date"] >= $time_between_comments) {
+                return 0;
+            } else {
+                return ($currentTime - $dati["date"]);
+            }
+        }
+    } else {
+        return -1;
+    }
+}
+
+function getAvatarUri($uri) {
+    global $defaultavatar_file;
+
+    if(!isset($uri) || $uri == "") {
+        return $defaultavatar_file;
+    } else {
+        return $uri;
+    }
+}
+
+function print_contents($dbresult) {
+    global $usercontent_directlyviewable, $defaultcontent_file, $content_index_note_maxlength;
+
+    if($dbresult == null) return;
+
+    if($dbresult->num_rows == 0) {
+        ?><p>Nessun elemento.</p><?php
+        return;
+    }
+
+    while($row = $dbresult->fetch_assoc()) {
+        $fileCategory = getContentFolderByCategory($row["type"]);
+        $fileName = $row["id"] . "." . $row["contentExtension"];
+        $filePath = $fileCategory . "/" . $fileName;
+
+        $thumbnailPath = "";
+        if($row["thumbnailExtension"] != "") {
+            $thumbnailName = $row["id"] . "." . $row["thumbnailExtension"];
+            $thumbnailPath = getContentFolderByCategory("thumbnail") . "/" . $thumbnailName;
+        }
+
+        if($thumbnailPath != "" || in_array($row["type"], $usercontent_directlyviewable)) {
+            if($thumbnailPath != "") {
+                $finalSource = $thumbnailPath;
+            } else {
+                $finalSource = $filePath;
+            }
+        } else {
+            $finalSource = $fileCategory . "/" . $defaultcontent_file;
+        }
+
+        $tags = getTagArray($row["tags"]);
+
+        $ratings = getRatings("content", $row["id"]);
+    ?>
+    <article class="explore_item bgcolor_secondary">
+        <a href="view.php?id=<?php echo $row["id"]; ?>">
+            <img class="explore_item_image" src="<?php echo $finalSource; ?>" alt="Immagine risorsa" />
+            <div class="explore_item_content">
+                <h4 class="explore_item_contenttitle"><?php echo $row["title"]; ?></h4>
+                <pre class="explore_item_contenttags"><?php if(!empty($tags)) echo getPrintableArray($tags); ?></pre>
+                <p><b><?php echo $ratings["likes"]; ?></b> 👍 | <b><?php echo $ratings["dislikes"]; ?> 👎</b></p>
+                <p><?php echo getFixedString(getCutString($row["notes"], $content_index_note_maxlength)); ?></p>
+            </div>
+        </a>
+    </article>
+    <?php }
+}
+
+function print_goBackSection($redirect = "", $text = "🔙 Torna a Esplora") {
+    ?>
+    <div class="section_goback">
+        <button onClick="redirect('<?php echo $redirect; ?>');" class="button bgcolor_secondary color_on_secondary"><?php echo $text; ?></button>
+    </div>
+    <?php
+}
+
+function print_ratingSection($myRating, $ratingsNumber, $type, $elementId) {
+    global $folder_backend;
+
+    $classButtonLike = "";
+    $classButtonDislike = "";
+    if($myRating == 1) { // like
+        $classButtonLike = "chosenrating";
+    } else if($myRating == 0) { // dislike
+        $classButtonDislike = "chosenrating";
+    }
+
+    ?>
+    <a class="changerating" id="changelike" href="./<?php echo $folder_backend; ?>/chngrtng.php?value=like&type=<?php echo $type; ?>&elementid=<?php echo $elementId; ?>"><button id="like_button" class="button bgcolor_secondary_variant <?php echo $classButtonLike; ?> color_on_secondary" <?php if(!isLogged()) { echo "disabled"; } ?>>[<span id="like_counter"><?php echo $ratingsNumber["likes"]; ?></span>] 👍 Mi piace</button></a>&nbsp;
+    <a class="changerating" id="changedislike" href="./<?php echo $folder_backend; ?>/chngrtng.php?value=dislike&type=<?php echo $type; ?>&elementid=<?php echo $elementId; ?>"><button id="dislike_button" class="button bgcolor_secondary_variant <?php echo $classButtonDislike; ?> color_on_secondary" <?php if(!isLogged()) { echo "disabled"; } ?>>[<span id="dislike_counter"><?php echo $ratingsNumber["dislikes"]; ?></span>] 👎 Non mi piace</button></a>&nbsp;
+    <?php
 }
 
 // -------- CODICE GLOBALE

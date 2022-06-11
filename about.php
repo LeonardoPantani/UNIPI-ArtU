@@ -8,8 +8,6 @@ require_once($folder_include . "/dbconn.php");
 // da qui in poi viene aggiunto output alla pagina HTML...
 require_once($folder_include . "/head.php");
 require_once($folder_include . "/navbar.php");
-
-// TODO ultimare manuale utente
 ?>
 <main class="main_content">
     <div class="flex_container">
@@ -27,7 +25,7 @@ require_once($folder_include . "/navbar.php");
                 questi ultimi di pubblicare le loro creazioni e ricevere feedback dagli altri utenti. Il vantaggio di
                 questo servizio è la gamma di contenuti che possono essere pubblicati, come:
                 <strong>foto, video, dipinti, musica, testi e poesie</strong>. Questo progetto implementa anche un sistema
-                stile community come i like/dislike, amici e utenti seguiti.
+                stile community come i like/dislike, commenti e amicizie.
             </p>
             <h2>Spiegazione sezioni</h2>
             <h3>🌍 Esplora (<small>Visibile a tutti 🔓</small>)</h3>

@@ -11,8 +11,9 @@ if (isset($_POST["access"])) { // è un login
     $username = $_POST["access"];
     $password = $_POST["password"];
 
-    if (!checkLogin($username, $password)) {
-        return;
+    if(!validatePassword($password)) {
+        echo _("Password non valida. Deve essere lunga almeno 6 caratteri.");
+        return false;
     }
 
     $stmt = $dbconn->prepare("SELECT * FROM $table_users WHERE username = ? OR email = ?");
@@ -90,10 +91,10 @@ if (isset($_POST["access"])) { // è un login
     echo "register_ok";
 }
 
-function checkLogin($username, $password): bool
+function checkRegister($username, $email, $password, $repeatpassword): bool
 {
     if (!validateUsername($username)) {
-        echo _("Username non valido. Deve essere lungo almeno 6 caratteri e può essere composto solo da lettere, numeri e trattini bassi.");
+        echo _("Username non valido. Deve avere una lunghezza compresa tra i 6 e i 20 caratteri e può essere composto solo da lettere, numeri e trattini bassi.");
         return false;
     }
 
@@ -101,13 +102,6 @@ function checkLogin($username, $password): bool
         echo _("Password non valida. Deve essere lunga almeno 6 caratteri.");
         return false;
     }
-
-    return true;
-}
-
-function checkRegister($username, $email, $password, $repeatpassword): bool
-{
-    if (!checkLogin($username, $password)) return false;
 
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         echo _("Email non valida. Controlla il formato.");
