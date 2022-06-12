@@ -18,7 +18,6 @@ session_set_cookie_params([ // imposto che la sessione duri tot tempo
     'samesite' => 'none'
 ]);
 
-session_name('__Secure-Session');
 session_start();
 
 /**
