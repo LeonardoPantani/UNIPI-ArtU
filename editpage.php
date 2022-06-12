@@ -35,11 +35,11 @@ if($nrighe == 0) {
             <form id="editpage_form" autocomplete="off" action="./<?php echo $folder_backend; ?>/editpg.php" method="POST">
                 <textarea id="htmeditor" name="htmeditor" rows="20" placeholder="Scrivi qualcosa... Massimo <?php echo $content_page_maxlength; ?> caratteri" maxlength="<?php echo $content_page_maxlength; ?>"><?php echo htmlspecialchars($content); ?></textarea>
 
-                <section class="section_secondary">
-                    <a href="./profile.php"><input id="goback" type="button" value="🔙 Indietro" class="button bgcolor_secondary color_on_secondary" /></a>
+                <div class="section_secondary">
+                    <input id="goback" type="button" value="🔙 Indietro" class="button bgcolor_secondary color_on_secondary" onClick="redirect('./profile.php');"/>
                     <input id="editpage_submitform" type="submit" value="🔃 Aggiorna Pagina" class="button bgcolor_secondary color_on_secondary" />
                     <p id="result"></p>
-                </section>
+                </div>
             </form>
         </div>
     </div>

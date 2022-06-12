@@ -12,11 +12,12 @@ require_once($folder_include . "/head.php"); ?>
 <link rel="stylesheet" href="<?php echo $folder_css; ?>/rating_system.css">
 <script src="<?php echo $folder_scripts; ?>/rating_system.js"></script>
 <?php require_once($folder_include . "/navbar.php");
-$paginationNumber = 3; // TODO rendere configurabile
+$paginationNumber = 5;
 
 $userpage = null;
 $permission = false;
 $emptypage = true;
+$myRating = null;
 if(isset($_GET["username"]) && $_GET["username"] != "") {
     $pageuserid = getUserIdByUsername($_GET["username"]);
     if($pageuserid != null) { // se l'utente esiste si entra nell'if
@@ -31,20 +32,11 @@ if(isset($_GET["username"]) && $_GET["username"] != "") {
         $invisibleContent = null; // contiene i contenuti dell'utente visibili ai soli amici
         if($permission) {
             $ratings = getRatings("page", $userpage["userid"]);
-
-            $classButtonLike = "bgcolor_secondary_variant";
-            $classButtonDislike = "bgcolor_secondary_variant";
             if(isLogged()) {
                 $amIFriend = amIFriendOf($pageuserid);
+                $myRating = getUserRating($id, "page", $pageuserid);
                 if($amIFriend || $id == $pageuserid) {
                     $invisibleContent = getUserContent($pageuserid, 1, $paginationNumber);
-                }
-
-                $myRating = getUserRating("page", $id, $pageuserid);
-                if($myRating == 1) { // like
-                    $classButtonLike = "chosenrating";
-                } else if($myRating == 0) { // dislike
-                    $classButtonDislike = "chosenrating";
                 }
             }
         }
@@ -75,7 +67,7 @@ if(isset($_GET["username"]) && $_GET["username"] != "") {
                         if(isLogged()) {
                             if($id == $pageuserid) { ?>
                                 <p>Così è come vedranno gli altri utenti la tua pagina del profilo. <a href="./editpage.php">🔧 Modifica pagina</a></p>
-                                <?php if(!$visibility) { ?>
+                                <?php if(!$setting_visibility) { ?>
                                 <p class="color_important">Nota: hai impostato la visibilità della pagina su <b>privata</b>, pertanto nessuno eccetto te e i tuoi amici potrà vederla.</p>
                                 <?php } ?>
                             <?php } else {
@@ -119,7 +111,7 @@ if(isset($_GET["username"]) && $_GET["username"] != "") {
         <div class="flex_item bgcolor_primary color_on_primary">
             <h2>Contenuti pubblici di <?php echo $userpage["username"]; ?></h2>
             <div class="explore_container textalign_center">
-                <?php print_contents($visibleContent); ?>
+                <?php print_contents($visibleContent, "<a href='./search.php?username=" . $userpage["username"] . "&private=0'>Clicca per vedere tutti i contenuti pubblici</a>"); ?>
             </div>
         </div>
 
@@ -127,7 +119,7 @@ if(isset($_GET["username"]) && $_GET["username"] != "") {
             <h2>Contenuti privati di <?php echo $userpage["username"]; ?></h2>
             <?php if($amIFriend || $id == $pageuserid) { ?>
                 <div class="explore_container textalign_center">
-                    <?php print_contents($invisibleContent); ?>
+                    <?php print_contents($invisibleContent, "<a href='./search.php?username=" . $userpage["username"] . "&private=1'>Clicca per vedere tutti i contenuti privati</a>"); ?>
                 </div>
             <?php } else {
                 if(isLogged()) { ?>

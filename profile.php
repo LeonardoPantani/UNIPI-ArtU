@@ -12,12 +12,8 @@ require_once($folder_include . "/head.php"); ?>
 <script src="<?php echo $folder_scripts; ?>/profile.js"></script>
 <?php
 require_once($folder_include . "/navbar.php");
-
 $pendingfriendrequests = getNumPendingFriendRequests($id);
 ?>
-<style>
-
-</style>
 
 <main class="main_content">
     <p id="username" class="gone"><?php echo $username; ?></p>
@@ -59,7 +55,7 @@ $pendingfriendrequests = getNumPendingFriendRequests($id);
                 <p>Data creazione: <b><?php echo getFormattedDate($creationDate); ?></b></p>
                 <p>Visibilità pagina:
                     <span class="color_secondary">
-                        <?php if ($visibility) {
+                        <?php if ($setting_visibility) {
                             echo "Pubblica 👥";
                         } else {
                             echo "Privata 👤";
@@ -71,13 +67,34 @@ $pendingfriendrequests = getNumPendingFriendRequests($id);
             <hr>
             <div>
                 <h2>🔑 Cambia password</h2>
+                <p>Qui puoi effettuare il cambio della password. Ricorda: deve essere lunga almeno <?php echo $password_minlength; ?> caratteri.</p>
                 <form id="chngpswd_form" autocomplete="off" action="./<?php echo $folder_backend; ?>/chngpswd.php" method="POST">
+                    <!-- la vecchia password non ha il requisito minlength nel caso in cui si cambiasse la dimensione minima in futuro -->
                     <input autocomplete="new-password" type="password" id="oldpassword" name="oldpassword" placeholder="Vecchia password"><br>
-                    <input autocomplete="new-password" type="password" id="newpassword" name="newpassword" placeholder="Nuova password"><br>
+                    <input autocomplete="new-password" type="password" id="newpassword" name="newpassword" placeholder="Nuova password" minlength="<?php echo $password_minlength; ?>"><br>
 
                     <input id="chngpswd_submitform" type="submit" value="Cambia password" class="button bgcolor_secondary color_on_secondary" disabled />
 
                     <p id="chngpswd_warning" class="color_warning gone"></p>
+                </form>
+
+                <h2>🔖 Paginazione</h2>
+                <p>Qui puoi specificare quanti contenuti degli utenti vedere per pagina. Per ora si applica solo alla sezione <b>🌍 Esplora</b>.</p>
+                <form id="chngpgntn_form" autocomplete="off" action="./<?php echo $folder_backend; ?>/chngpgnt.php" method="POST">
+                    <p id="numelemsperpage" class="gone"><?php echo $setting_numElemsPerPage; ?></p>
+                    <select name="chngpgnt_numElemsPerPage" id="chngpgnt_numElemsPerPage">
+                        <option value="<?php echo $setting_numElemsPerPage; ?>">Selezionato: <?php echo $setting_numElemsPerPage; ?> elementi per pagina</option>
+                        <?php
+                            foreach($validPaginationNumbers as $value) {
+                                if($value != $setting_numElemsPerPage) { ?>
+                                    <option value="<?php echo $value; ?>"><?php echo $value; ?> elementi per pagina</option>
+                                <?php } ?>
+                        <?php } ?>
+                    </select><br>
+
+                    <input id="chngpgnt_submitform" type="submit" value="Cambia paginazione" class="button bgcolor_secondary color_on_secondary" disabled />
+
+                    <p id="chngpgnt_warning" class="color_warning gone"></p>
                 </form>
             </div>
             <hr>

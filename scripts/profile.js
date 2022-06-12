@@ -40,15 +40,16 @@ $(function() {
         e.preventDefault();
         // invio richiesta ajax
         sendAjax($(this).attr('action'), $(this), function(result) {
-            let dialog = $("#chngpswd_warning");
+            const dialog = $("#chngpswd_warning");
             dialog.removeClass("gone");
             if (result === "chngpswd_ok") {
-                dialog.text(result);
+                dialog.text("Password cambiata con successo!");
+
                 $("#chngpswd_form").trigger('reset');
                 updateSubmitButton($("#chngpswd_submitform"), false)
                 setTimeout(function() {
+                    dialog.addClass("gone");
                     dialog.text("");
-                    updateSubmitButton($("#chngpswd_submitform"), true)
                 }, 3000);
             } else {
                 dialog.text(result);
@@ -69,6 +70,48 @@ $(function() {
             updateSubmitButton($("#chngpswd_submitform"), false)
         } else {
             updateSubmitButton($("#chngpswd_submitform"), true)
+        }
+    });
+
+    // numero elementi per pagina
+    $("#chngpgntn_form").on("submit",function(e) {
+        e.preventDefault();
+        // invio richiesta ajax
+        sendAjax($(this).attr('action'), $(this), function(result) {
+            const dialog = $("#chngpgnt_warning");
+            dialog.removeClass("gone");
+            if (result === "chngpgnt_ok") {
+                dialog.text("Numero elementi cambiato con successo!");
+
+                updateSubmitButton($("#chngpgnt_submitform"), false)
+                // tolgo la scritta "Selezionato: " a quello che ce l'aveva prima e invece lo metto a quello nuovo
+                $("#chngpgnt_numElemsPerPage > option").each(function() {
+                    $(this).text(($(this).text()).replace("Selezionato: ", ""));
+
+                    if($(this).val() === $("#chngpgnt_numElemsPerPage").val()) {
+                        $(this).text("Selezionato: " + $(this).text());
+                    }
+                });
+                $("#numelemsperpage").text($("#chngpgnt_numElemsPerPage").val()); // aggiorno il valore attuale della preferenza
+
+                setTimeout(function() {
+                    dialog.addClass("gone");
+                    dialog.text("");
+                }, 3000);
+            } else {
+                dialog.text(result);
+            }
+        }, false);
+    });
+
+    $("#chngpgnt_numElemsPerPage").on("change", function() {
+        let elem = $("#chngpgnt_numElemsPerPage");
+        let actual = $("#numelemsperpage").text();
+
+        if(elem.val() !== actual) {
+            updateSubmitButton($("#chngpgnt_submitform"), true);
+        } else {
+            updateSubmitButton($("#chngpgnt_submitform"), false);
         }
     });
 
@@ -131,7 +174,7 @@ $(function() {
         if (confirm("Siete DAVVERO sicuri di voler eliminare l'account? E' un'operazione irreversibile.")) {
             sendAjax($(this).attr('action'), $(this), function(result) {
                 if (result === "delacc_ok") {
-                    logout();
+                    logout(true);
                 } else {
                     const dialog = $("#delacc_warning");
                     dialog.removeClass("gone");

@@ -7,15 +7,14 @@ require_once($folder_include . "/functions.php");
 if (isset($_GET["code"])) {
     switch ($_GET["code"]) {
         case 0: { // errore col database
-            $emsg = "Colpa nostra! Si è verificato un errore interno.";
+            $emsg = "Colpa nostra! Non c'è altro da fare se non aspettare che il problema venga risolto...\n";
             break;
         }
     }
 }
 
 if(!isset($emsg)) {
-    header("Location:./index.php");
-    return;
+    $emsg = "???";
 }
 
 // da qui in poi viene aggiunto output alla pagina HTML...

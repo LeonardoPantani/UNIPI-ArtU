@@ -23,11 +23,11 @@ require_once($folder_include . "/head.php"); ?>
     <div class="flex_container">
         <div class="flex_item bgcolor_primary color_on_primary">
             <div class="generator_main">
-                <section class="slots">
+                <div class="slots">
                     <div id="slot1" class="icons">❓</div>
                     <div id="slot2" class="icons">❔</div>
                     <div id="slot3" class="icons">❓</div>
-                </section>
+                </div>
                 <!-- input -->
                 <form id="form_idea" autocomplete="off" action="./<?php echo $folder_backend; ?>/gnrtidea.php" method="POST">
                     <select name="type" id="type" required>

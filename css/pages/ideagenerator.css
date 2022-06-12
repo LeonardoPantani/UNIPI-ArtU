@@ -3,11 +3,12 @@
     margin: auto;
 }
 
-section.slots {
+.slots {
     display: flex;
     justify-content: space-around;
     border-radius: 10px;
 }
+
 .icons {
     font-size: 30px;
     text-align: center;

@@ -15,7 +15,7 @@ if ($username != $_POST["chngprofvis_text"]) {
     return;
 }
 
-$stmt = $dbconn->prepare("UPDATE $table_users SET visibility = NOT visibility WHERE id = ?");
+$stmt = $dbconn->prepare("UPDATE $table_users SET setting_visibility = NOT setting_visibility WHERE id = ?");
 $stmt->bind_param("i", $id);
 $stmt->execute();
 
@@ -24,6 +24,6 @@ if ($stmt->affected_rows != 1) {
     return;
 }
 
-$_SESSION["visibility"] = !$visibility;
-$visibility = $_SESSION["visibility"];
+$_SESSION["setting_visibility"] = !$setting_visibility;
+$setting_visibility = $_SESSION["setting_visibility"];
 echo "chngprofvis_ok";

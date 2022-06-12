@@ -75,7 +75,7 @@ $esitoFriends = getUserFriends($id);
                 <p>Niente da mostrare.</p>
             <?php } ?>
 
-            <?php print_goBackSection("profile.php"); ?>
+            <?php print_goBackSection("profile.php", "🔙 Torna al tuo profilo"); ?>
         </div>
     </div>
 </main>

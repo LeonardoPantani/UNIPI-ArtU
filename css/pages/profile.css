@@ -21,7 +21,7 @@
     display: inline-block;
 }
 
-#chngpswd_submitform {
+#chngpswd_submitform, #chngpgnt_submitform {
     margin-top: 1em;
 }
 

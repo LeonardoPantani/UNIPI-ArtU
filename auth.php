@@ -14,7 +14,7 @@ require_once($folder_include . "/head.php"); ?>
 ?>
 
 <main class="main_content">
-    <div id="auth_grid_container" class="align_center bgcolor_important color_on_info width_50 bold" style="background-image: url('./media/auth1.webp');">
+    <div id="auth_grid_container" class="align_center bgcolor_important color_on_info width_50 bold">
         <div class="auth_grid_item_welcome" style="grid-area: welcome;">Benvenuti</div>
         <div class="auth_grid_item_welcome" style="grid-area: hello;">Bentornati</div>
         <div style="grid-area: empty;"></div>
@@ -56,6 +56,15 @@ require_once($folder_include . "/head.php"); ?>
                 <input type="text" class="login_validation" id="login_access" name="access" placeholder="Nome utente o Email" required><br>
                 <input type="password" class="login_validation" id="login_password" name="password" placeholder="Password" minlength="<?php echo $password_minlength; ?>" required><br>
                 <input type="submit" id="login_submit" value="Login" class="button bgcolor_secondary color_on_secondary" disabled>
+
+                <h3 class="textalign_center">Profili di prova:</h3>
+                <p class="textalign_start">
+                    username: "utente", password: "utente"
+                    <br>
+                    username: "leonardo", password: "leonardo"
+                    <br>
+                    username: "autore", password: "autore"
+                </p>
             </form>
         </div>
     </div>

@@ -1,9 +1,4 @@
 <?php
-header('X-Frame-Options: sameorigin');
-header('X-Content-Type-Options: nosniff');
-header("X-XSS-Protection: 1; mode=block");
-header_remove("X-Powered-By");
-
 ini_set("session.cookie_httponly", 1);
 ini_set('session.use_only_cookies', 1);
 ini_set('session.cookie_secure', 1);
@@ -12,8 +7,9 @@ ini_set("session.gc_probability", 1);
 ini_set("session.gc_divisor", 1);
 ini_set("log_errors", 1);
 ini_set("error_log", "include/error_log.log");
+ini_set("error_reporting", $error_reporting);
 
-session_set_cookie_params([
+session_set_cookie_params([ // imposto che la sessione duri tot tempo
     'lifetime' => 10 * 60 * 1000, // 10 minuti
     'path' => '/',
     'domain' => "",
@@ -25,6 +21,9 @@ session_set_cookie_params([
 session_name('__Secure-Session');
 session_start();
 
+/**
+ * @return bool vero se l'utente è loggato, falso altrimenti
+ */
 function isLogged(): bool
 {
     if (isset($_SESSION["id"])) {
@@ -34,6 +33,11 @@ function isLogged(): bool
     }
 }
 
+/**
+ * Espelle / mostra messaggio di errore agli utenti non loggati
+ * @param ajax se vero viene stampato il messaggio e non si viene reinderizzati
+ * @param redirect la pagina di reindirizzamento
+ */
 function kickGuestUser($ajax = false, $redirect = "./auth.php")
 {
     if (!isLogged()) {
@@ -46,6 +50,11 @@ function kickGuestUser($ajax = false, $redirect = "./auth.php")
     }
 }
 
+/**
+ * Espelle / mostra messaggio di errore agli utenti loggati
+ * @param ajax se vero viene stampato il messaggio e non si viene reinderizzati
+ * @param redirect la pagina di reindirizzamento
+ */
 function kickLoggedUser($ajax = false, $redirect = "./")
 {
     if (isLogged()) {
@@ -58,6 +67,10 @@ function kickLoggedUser($ajax = false, $redirect = "./")
     }
 }
 
+/**
+ * Elimina la sessione attuale.
+ * @param redirect la pagina di reindirizzamento, "" se non si vuole reindirizzare l'utente
+ */
 function deleteSession($redirect = "")
 {
     session_destroy();
@@ -67,6 +80,11 @@ function deleteSession($redirect = "")
     }
 }
 
+/**
+ * Valid l'username seguendo la regex del config
+ * @param username l'username da validare
+ * @return bool vero se l'username è valido, falso altrimenti
+ */
 function validateUsername($username): bool
 {
     global $username_regex;
@@ -77,20 +95,63 @@ function validateUsername($username): bool
     return true;
 }
 
+/**
+ * Valid la password seguendo le specifiche del config.
+ * @param username la password da validare
+ * @return bool vero se la password è valida, falso altrimenti
+ */
 function validatePassword($password): bool
 {
-    if (strlen($password) < 6) return false;
+    global $password_minlength;
+
+    if (strlen($password) < $password_minlength) return false;
 
     return true;
 }
 
-function deleteAvatar($avataruri)
+/**
+ * Elimina il file specificato dal parametro
+ * @param avataruri l'uri dell'avatar da cancellare
+ */
+function deleteAvatarFile($avataruri)
 {
     global $defaultavatar_file, $folder_avatars;
     if($avataruri == $defaultavatar_file) return;
 
-    if (file_exists("../" . $folder_avatars . "/" . $avataruri)) {
-        unlink("../" . $folder_avatars . "/" . $avataruri);
+    $toDelete = "../" . $folder_avatars . "/" . $avataruri;
+
+    if (file_exists($toDelete)) {
+        unlink($toDelete);
+    }
+}
+
+/**
+ * Elimina tutti i contenuti dell'utente dal disco.
+ * NOTA: non cancella gli elementi nel database! Fare una query.
+ * @param userid l'id dell'utente di cui cancellare i contenuti da disco
+ */
+function deleteUserContentFiles($userid) {
+    global $dbconn, $table_usercontent, $folder_thumbnail;
+
+    $stmt = $dbconn->prepare("SELECT $table_usercontent.* FROM $table_usercontent WHERE userid = ?");
+    $stmt->bind_param("i", $userid);
+    $stmt->execute();
+    $esito = $stmt->get_result();
+
+    while($row = $esito->fetch_assoc()) {
+        $toDelete = "../" . getContentFolderByCategory($row["type"]) . "/" . $row["id"] . "." . $row["contentExtension"];
+
+        if(file_exists($toDelete)) {
+            unlink($toDelete);
+        }
+
+        if($row["thumbnailExtension"] != "") { // c'è una thumbnail
+            $toDeleteThumbnail = "../" . $folder_thumbnail . "/" . $row["id"] . "." . $row["thumbnailExtension"];
+
+            if(file_exists($toDeleteThumbnail)) {
+                unlink($toDeleteThumbnail);
+            }
+        }
     }
 }
 
@@ -117,6 +178,11 @@ function getUserIdByUsername($username): int|null
     return $ret["id"];
 }
 
+/**
+ * Fornisce i dati sulla pagina dell'utente.
+ * @param userid l'id dell'utente di cui ottenere i dati sulla pagina
+ * @return array|null l'array associativo con gli attributi della pagina, null se l'utente non ha mai modificato la propria pagina (o se l'utente non esiste)
+ */
 function getUserPageById($userid): array|null {
     global $dbconn, $table_users, $table_pages;
 
@@ -301,7 +367,12 @@ function checkFriendRequest($me, $other): int
     }
 }
 
-function getUserFriends($userid): bool|mysqli_result
+/**
+ * Fornisce la lista di amici dell'utente.
+ * @param userid l'id dell'utente di cui ottenere la lista di amici
+ * @return bool|mysqli_result il result su cui fare fetch_assoc()
+ */
+function getUserFriends($userid): mysqli_result
 {
     global $dbconn, $table_friends, $table_users;
     
@@ -318,7 +389,13 @@ function getUserFriends($userid): bool|mysqli_result
     return $stmt->get_result();
 }
 
-function getFriendsNumber($userid) {
+/**
+ * Restituisce il numero di amici dell'utente
+ * @param userid l'id dell'utente
+ * @return int numero di amici dell'utente
+ */
+function getFriendsNumber($userid): int
+{
     global $dbconn, $table_friends;
 
     $stmt = $dbconn->prepare("SELECT * FROM $table_friends WHERE userida = ? OR useridb = ?");
@@ -326,19 +403,38 @@ function getFriendsNumber($userid) {
     $stmt->execute();
     $esito = $stmt->get_result();
 
+    if($esito === null || $esito === false) {
+        return -1;
+    }
+
     return $esito->num_rows;
 }
 
+/**
+ * Restituisce la data in formato leggibile
+ * @param unixtime il tempo in formato UNIX
+ * @return string la data in formato leggibile
+ */
 function getFormattedDate($unixtime): string
 {
     return date("d/m/Y", $unixtime);
 }
 
+/**
+ * Restituisce la data e l'ora in formato leggibile
+ * @param unixtime il tempo in formato UNIX
+ * @return string la data e l'ora in formato leggibile
+ */
 function getFormattedDateTime($unixtime): string
 {
     return date("d/m/Y H:i", $unixtime);
 }
 
+/**
+ * Funzione interna.
+ * @param category la categoria di cui ottenere la cartella
+ * @return string la cartella relativa alla categoria, o "" se la categoria non è valida
+ */
 function getContentFolderByCategory($category): string
 {
     global $folder_photo, $folder_video, $folder_drawing, $folder_music, $folder_text, $folder_poetry, $folder_thumbnail;
@@ -371,6 +467,11 @@ function getContentFolderByCategory($category): string
     }
 }
 
+/**
+ * Funzione interna.
+ * @param category la categoria di cui ottenere le estensioni valide
+ * @return array l'array di stringhe che rappresentano le estensioni accettate per gli elementi di quella categoria
+ */
 function getValidExtensionsByCategory($category): array
 {
     global $accept_photo, $accept_video, $accept_drawing, $accept_music, $accept_text, $accept_poetry;
@@ -407,11 +508,23 @@ function getValidExtensionsByCategory($category): array
     }
 }
 
-function getCutString($string, $limit) {
+/**
+ * Restituisce la stringa tagliata al carattere limit
+ * @param string la stringa da tagliare
+ * @param limit il punto in cui tagliare
+ * @return mixed|string la stringa tagliata al carattere limit
+ */
+function getCutString($string, $limit): mixed
+{
     return (strlen($string) > $limit ? substr($string,0,$limit) . "..." : $string);
 }
 
-function getStringReadTime($string): float
+/**
+ * Restituisce il tempo stimato di lettura di una stringa.
+ * @param string la stringa di cui calcolare il tempo stimato di lettura
+ * @return int il tempo (in secondi) stimato di lettura di una stringa
+ */
+function getStringReadTime($string): int
 {
     /*
      * In media una persona legge 200 parole al minuto (3,4 parole al secondo)
@@ -419,7 +532,11 @@ function getStringReadTime($string): float
     return floor(str_word_count(strip_tags($string)) / 3.4);
 }
 
-
+/**
+ * Restituisce il tempo formattato in x ore e x minuti e x secondi
+ * @param time il tempo in formato UNIX da formattare
+ * @return string la stringa formattata che rappresenta il tempo
+ */
 function getFormattedTime($time): string
 {
     if($time < 60) {
@@ -433,6 +550,13 @@ function getFormattedTime($time): string
     return gmdate('h \o\r\e \e i \m\i\n\u\t\i \e s \s\e\c\o\n\d\i', $time);
 }
 
+/**
+ * Restituisce il numero di mi piace e non mi piace di un contenuto. Su ArtU si può mettere mi piace e non mi piace a
+ * contenuti degli utenti e alle loro pagine.
+ * @param type il tipo del contenuto (content oppure page)
+ * @param elementID l'id dell'elemento (id del contenuto o id della pagina)
+ * @return array coppia $ret["likes"] e $ret["dislikes"] contenente rispettivamente il # di mi piace e di non mi piace
+ */
 function getRatings($type, $elementID): array
 {
     global $dbconn, $table_pages_ratings, $table_usercontent_ratings;
@@ -468,7 +592,15 @@ function getRatings($type, $elementID): array
     return $ret;
 }
 
-function getUserRating($type, $userid, $elementID) {
+/**
+ * Restituisce il rating che ha dato un utente su un certo contenuto
+ * @param userid l'id dell'utente di cui voglio sapere il rating
+ * @param type il tipo del contenuto (content oppure page)
+ * @param elementID l'id dell'elemento (id del contenuto o id della pagina)
+ * @return int|mixed -1 se non ha votato, 1 se ha messo "mi piace", 0 se ha messo "non mi piace"
+ */
+function getUserRating($userid, $type, $elementID): mixed
+{
     global $dbconn, $table_pages_ratings, $table_usercontent_ratings;
 
     if($type == "content") {
@@ -493,7 +625,12 @@ function getUserRating($type, $userid, $elementID) {
     }
 }
 
-function getComments($contentid): bool|mysqli_result
+/**
+ * Restituisce i commenti di un determinato contenuto
+ * @param contentid l'id del contenuto di cui vedere i commenti
+ * @return mysqli_result il result su cui fare il fetch_assoc()
+ */
+function getComments($contentid): mysqli_result
 {
     global $dbconn, $table_users, $table_usercontent_comments;
 
@@ -536,7 +673,7 @@ function canISeePage($userpageid): bool
 
     $dati = getUserPageById($userpageid);
     if($dati != null) {
-        if($dati["visibility"] == 1 || (isLogged() && (amIFriendOf($dati["id"]) || $id == $dati["id"]))) {
+        if($dati["setting_visibility"] == 1 || (isLogged() && (amIFriendOf($dati["id"]) || $id == $dati["id"]))) {
             return true;
         } else {
             return false;
@@ -579,7 +716,13 @@ function canIComment($contentid): int
     }
 }
 
-function getAvatarUri($uri) {
+/**
+ * Restituisce la stringa che identifica il file dell'avatar
+ * @param uri l'uri preso dalle info del profilo
+ * @return string l'uri stesso se uri non è vuoto, il nome del file dell'avatar di default altrimenti
+ */
+function getAvatarUri($uri): string
+{
     global $defaultavatar_file;
 
     if(!isset($uri) || $uri == "") {
@@ -589,13 +732,18 @@ function getAvatarUri($uri) {
     }
 }
 
-function print_contents($dbresult) {
-    global $usercontent_directlyviewable, $defaultcontent_file, $content_index_note_maxlength;
+/**
+ * Stampa dei contenuti
+ * @param dbresult il risultato di una query al database, pronto per essere scorso
+ * @param finalText se mostra un testo alla fine della sequenza
+ */
+function print_contents($dbresult, $finalText = null) {
+    global $usercontent_directlyviewable, $defaultcontent_file, $explore_note_maxlength;
 
     if($dbresult == null) return;
 
     if($dbresult->num_rows == 0) {
-        ?><p>Nessun elemento.</p><?php
+        ?><p class="explore_item_textonly">Nessun elemento.</p><?php
         return;
     }
 
@@ -624,6 +772,7 @@ function print_contents($dbresult) {
 
         $ratings = getRatings("content", $row["id"]);
     ?>
+    <!-- possibile warning per mancanza di heading dell'article, in realtà c'è ma è più in basso -->
     <article class="explore_item bgcolor_secondary">
         <a href="view.php?id=<?php echo $row["id"]; ?>">
             <img class="explore_item_image" src="<?php echo $finalSource; ?>" alt="Immagine risorsa" />
@@ -631,14 +780,25 @@ function print_contents($dbresult) {
                 <h4 class="explore_item_contenttitle"><?php echo $row["title"]; ?></h4>
                 <pre class="explore_item_contenttags"><?php if(!empty($tags)) echo getPrintableArray($tags); ?></pre>
                 <p><b><?php echo $ratings["likes"]; ?></b> 👍 | <b><?php echo $ratings["dislikes"]; ?> 👎</b></p>
-                <p><?php echo getFixedString(getCutString($row["notes"], $content_index_note_maxlength)); ?></p>
+                <p><?php echo getFixedString(getCutString($row["notes"], $explore_note_maxlength)); ?></p>
             </div>
         </a>
     </article>
     <?php }
+
+    if($finalText != null) { ?>
+        <article class="explore_item explore_item_textonly">
+            <?php echo $finalText; ?>
+        </article>
+    <?php }
 }
 
-function print_goBackSection($redirect = "", $text = "🔙 Torna a Esplora") {
+/**
+ * Stampa della sezione "torna indietro"
+ * @param redirect il link a cui tornare indietro
+ * @param text il testo da mostrare sul pulsante
+ */
+function print_goBackSection($redirect = "./", $text = "🔙 Torna a Esplora") {
     ?>
     <div class="section_goback">
         <button onClick="redirect('<?php echo $redirect; ?>');" class="button bgcolor_secondary color_on_secondary"><?php echo $text; ?></button>
@@ -646,7 +806,14 @@ function print_goBackSection($redirect = "", $text = "🔙 Torna a Esplora") {
     <?php
 }
 
-function print_ratingSection($myRating, $ratingsNumber, $type, $elementId) {
+/**
+ * Stampa della sezione dei pulsanti "mi piace" e "non mi piace"
+ * @param myRating la mia valutazione (0, 1 o -1)
+ * @param ratingsNumber i valori dei mi piace e non mi piace totali
+ * @param type il tipo del contenuto (content oppure page)
+ * @param elementID l'id dell'elemento (id del contenuto o id della pagina)
+ */
+function print_ratingSection($myRating, $ratingsNumber, $type, $elementID) {
     global $folder_backend;
 
     $classButtonLike = "";
@@ -658,19 +825,23 @@ function print_ratingSection($myRating, $ratingsNumber, $type, $elementId) {
     }
 
     ?>
-    <a class="changerating" id="changelike" href="./<?php echo $folder_backend; ?>/chngrtng.php?value=like&type=<?php echo $type; ?>&elementid=<?php echo $elementId; ?>"><button id="like_button" class="button bgcolor_secondary_variant <?php echo $classButtonLike; ?> color_on_secondary" <?php if(!isLogged()) { echo "disabled"; } ?>>[<span id="like_counter"><?php echo $ratingsNumber["likes"]; ?></span>] 👍 Mi piace</button></a>&nbsp;
-    <a class="changerating" id="changedislike" href="./<?php echo $folder_backend; ?>/chngrtng.php?value=dislike&type=<?php echo $type; ?>&elementid=<?php echo $elementId; ?>"><button id="dislike_button" class="button bgcolor_secondary_variant <?php echo $classButtonDislike; ?> color_on_secondary" <?php if(!isLogged()) { echo "disabled"; } ?>>[<span id="dislike_counter"><?php echo $ratingsNumber["dislikes"]; ?></span>] 👎 Non mi piace</button></a>&nbsp;
+    <button data-href="./<?php echo $folder_backend; ?>/chngrtng.php?value=like&type=<?php echo $type; ?>&elementid=<?php echo $elementID; ?>" id="like_button" class="button bgcolor_secondary_variant <?php echo $classButtonLike; ?> color_on_secondary changerating" <?php if(!isLogged()) { echo "disabled"; } ?>>[<span id="like_counter"><?php echo $ratingsNumber["likes"]; ?></span>] 👍 Mi piace</button>&nbsp;
+    <button data-href="./<?php echo $folder_backend; ?>/chngrtng.php?value=dislike&type=<?php echo $type; ?>&elementid=<?php echo $elementID; ?>" id="dislike_button" class="button bgcolor_secondary_variant <?php echo $classButtonDislike; ?> color_on_secondary changerating" <?php if(!isLogged()) { echo "disabled"; } ?>>[<span id="dislike_counter"><?php echo $ratingsNumber["dislikes"]; ?></span>] 👎 Non mi piace</button>&nbsp;
     <?php
 }
 
 // -------- CODICE GLOBALE
+// permette al codice del sito di accedere ai contenuti della sessione senza passare per $_SESSION (più comodo)
+// inoltre è fornito il nome della pagina senza "php" e percorso
 if (isLogged()) {
     $id = $_SESSION["id"];
     $username = $_SESSION["username"];
     $email = $_SESSION["email"];
     $creationDate = $_SESSION["creationDate"];
-    $visibility = $_SESSION["visibility"];
     $avataruri = $_SESSION["avatarUri"];
+
+    $setting_visibility = $_SESSION["setting_visibility"];
+    $setting_numElemsPerPage = $_SESSION["setting_numElemsPerPage"];
 }
 
 

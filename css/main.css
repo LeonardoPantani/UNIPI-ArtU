@@ -350,7 +350,14 @@ textarea {
     height: 10px;
 }
 
-/* prova */
+/* explore */
+/* con schermi molto piccoli si ha solo l'explore item senza altro (appare come un div unico uno sotto l'altro) */
+/* con schermi almeno 50em si ha un container quindi gli elementi si mettono accanto ma son comunque abbastanza grossi
+    da essere facilmente cliccabili
+ */
+/* con schermi almeno 80em si ha più libertà e quindi la dimensione di ogni singolo elemento è più piccola per farcene
+    stare di più
+ */
 @media screen and (min-width: 50em) { /* larghezza minima schermo 30em */
     .explore_container {
         display: flex;
@@ -362,7 +369,6 @@ textarea {
 
     .explore_item {
         flex: 0 1 calc(50% - 1em);
-        border-radius: 10px;
     }
 }
 
@@ -374,6 +380,7 @@ textarea {
 
 .explore_item {
     margin: 4px;
+    border-radius: 10px;
 }
 
 .explore_item a {
@@ -392,9 +399,17 @@ textarea {
 }
 
 .explore_item_content {
-    padding: 0.5em 0.5em 0 0.5em;
+    padding: 0.5em;
 }
 
 .explore_item_contenttitle {
     margin: 0;
+}
+
+.explore_item_textonly {
+    margin: auto;
+}
+
+.explore_item_textonly > a {
+    color: var(--onprimary);
 }

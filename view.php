@@ -14,6 +14,7 @@ require_once($folder_include . "/head.php"); ?>
 <?php require_once($folder_include . "/navbar.php");
 
 $contentData = null;
+$myRating = null;
 if(isset($_GET["id"]) && $_GET["id"] != "") {
     $contentData = getContentById($_GET["id"]);
     if($contentData != null) {
@@ -23,7 +24,7 @@ if(isset($_GET["id"]) && $_GET["id"] != "") {
             $comments = getComments($_GET["id"]);
 
             if(isLogged()) {
-                $myRating = getUserRating("content", $id, $_GET["id"]);
+                $myRating = getUserRating($id, "content", $_GET["id"]);
                 $canICommentResult = canIComment($_GET["id"]);
             }
         }
@@ -109,7 +110,7 @@ if(isset($_GET["id"]) && $_GET["id"] != "") {
                     <h2>Informazioni sul contenuto</h2>
                     <p>
                         <a target="_blank" title="Clicca per aprire la pagina dell'utente" href="page.php?username=<?php echo $contentData["username"]; ?>"><img class="avatar avatar_medium" src="./<?php echo $folder_avatars . "/" . getAvatarUri($contentData["avatarUri"]); ?>" alt="Immagine utente"/><br>
-                        Creatore: <b><?php echo $contentData["username"]; ?></b></a> <?php if(isLogged() && $id == $contentData["id"]) { ?><i id="itsyou"><small>Ehi guardate, siete voi!</small></i><?php } ?><br>
+                        Creatore: <b><?php echo $contentData["username"]; ?></b></a> <?php if(isLogged() && $id == $contentData["id"]) { ?><i id="itsyou"><small>Ehi guarda, sei tu!</small></i><?php } ?><br>
                         Pubblicazione: <b><?php echo getFormattedDateTime($contentData["creationDate"]); ?></b><br>
                         Tags: <code><?php if(!empty($contentData["tags"])) echo getPrintableArray($contentData["tags"]); else echo "nessuno"; ?></code><br>
                         Privato?: <?php if($contentData["private"] == "1") {echo "sì"; echo " (riesci a vedere questo contenuto perché "; if($id == $contentData["userid"]) { echo "l'hai creato te"; } else { echo "sei amico del creatore"; } echo ")"; } else { echo "no"; } ?>
@@ -125,11 +126,12 @@ if(isset($_GET["id"]) && $_GET["id"] != "") {
                         <textarea id="text" class="text" name="text" placeholder="Inserisci un commento. Massimo <?php echo $comment_maxlength; ?> caratteri." maxlength="<?php echo $comment_maxlength; ?>" <?php if(!isLogged()) { echo "disabled"; } ?>></textarea><br>
                         <input type="submit" name="button" value="📨 Invia commento" <?php if(!isLogged()) { echo "disabled"; } ?> />&nbsp;<span id="addcmnt_result" class="gone"></span>
                     </form>
+                    <!-- possibile warning per mancanza di heading della section, in realtà c'è ma è più in basso -->
                     <section class="comment_section">
                         <?php while($row = $comments->fetch_assoc()) { ?>
                             <div class="comment comment<?php echo $row["id"]; ?>">
                                 <h4><a href="./page.php?username=<?php echo $row["username"]; ?>"><?php echo $row["username"]; ?></a></h4>
-                                <pre><?php echo getFormattedDateTime($row["date"]); ?> <span><?php if($row["userid"] == $id) { ?>| <a class="deletecomment" href="./<?php echo $folder_backend; ?>/delcmnt.php?id=<?php echo $row["id"]; ?>" data-id="<?php echo $row["id"]; ?>">❌ Elimina commento</a></span><?php } ?></pre>
+                                <pre><?php echo getFormattedDateTime($row["date"]); ?> <?php if($row["userid"] == $id) { ?><span>| <a class="deletecomment" href="./<?php echo $folder_backend; ?>/delcmnt.php?id=<?php echo $row["id"]; ?>" data-id="<?php echo $row["id"]; ?>">❌ Elimina commento</a></span><?php } ?></pre>
                                 <p><?php echo $row["text"]; ?></p>
                             </div>
                         <?php } ?>

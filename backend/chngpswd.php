@@ -45,4 +45,4 @@ if ($stmt->affected_rows != 1) {
     echo _("Errore interno durante la modifica della password.");
     return;
 }
-echo _("Password modificata con successo!");
+echo "chngpswd_ok";

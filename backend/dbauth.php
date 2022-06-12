@@ -42,7 +42,8 @@ if (isset($_POST["access"])) { // è un login
     $_SESSION["username"] = $username;
     $_SESSION["email"] = $datiUtente["email"];
     $_SESSION["creationDate"] = $datiUtente["creationDate"];
-    $_SESSION["visibility"] = $datiUtente["visibility"];
+    $_SESSION["setting_visibility"] = $datiUtente["setting_visibility"];
+    $_SESSION["setting_numElemsPerPage"] = $datiUtente["setting_numElemsPerPage"];
 
     if($datiUtente["avatarUri"] == "") {
         $_SESSION["avatarUri"] = $defaultavatar_file;
@@ -85,8 +86,9 @@ if (isset($_POST["access"])) { // è un login
     $_SESSION["username"] = $username;
     $_SESSION["email"] = $email;
     $_SESSION["creationDate"] = $currentTime;
-    $_SESSION["visibility"] = 1;
     $_SESSION["avatarUri"] = $defaultavatar_file;
+    $_SESSION["setting_visibility"] = 1;
+    $_SESSION["setting_numElemsPerPage"] = 15;
 
     echo "register_ok";
 }

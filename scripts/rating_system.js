@@ -3,14 +3,14 @@ $(function() {
         let current = $(this);
         e.preventDefault();
 
-        sendAjax($(this).attr("href"), null, function (result) {
+        sendAjax($(this).attr("data-href"), null, function (result) {
             if (result.startsWith("chngrtng_ok")) {
                 let array = result.split(":");
                 let newRating = Number.parseInt(array[1]);
                 let previousRating = Number.parseInt(array[2]);
 
                 let button1, button2, counter1, counter2;
-                if (current.attr("id") === "changelike") { // premuto "like"
+                if (current.attr("id") === "like_button") { // premuto "like"
                     button1 = $("#like_button");
                     counter1 = $("#like_counter");
                     button2 = $("#dislike_button");

@@ -27,13 +27,6 @@ nav a:hover  {
     background-color: #04AA6D;
 }
 
-@media screen and (max-width: 1000px) {
-    nav > * {
-        float: none;
-        display: block;
-    }
-}
-
 #navbar_datetime {
     color: lightgray;
     font-weight: normal;
@@ -41,4 +34,25 @@ nav a:hover  {
 
 .navbar_nopadding {
     padding: 0.25em 1em !important;
+}
+
+/* forzo altezza massima così sta bene nella navbar */
+.navbar_logo {
+    max-height: 2.5em;
+}
+
+/* dimensione forzata */
+.navbar_avatar {
+    height: 2.5em;
+    width: 2.5em;
+}
+
+/* metto un elemento per riga quando lo schermo è abbastanza piccolo, il cambio di stile della navbar combacia col cambio
+    di stile dei flex item
+ */
+@media screen and (max-width: 50em) {
+    .navbar_left,.navbar_right {
+        float: none;
+        display: block;
+    }
 }

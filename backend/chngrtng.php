@@ -35,7 +35,7 @@ if(($_GET["type"] == "content" && !canISeeContent($_GET["elementid"])) || ($_GET
 }
 
 // inizio logica
-$previousRating = getUserRating($_GET["type"], $id, $_GET["elementid"]);
+$previousRating = getUserRating($id, $_GET["type"], $_GET["elementid"]);
 if($_GET["value"] == "like") {
     $newRating = 1; // valore like
 } else {

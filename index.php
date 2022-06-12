@@ -12,7 +12,11 @@ require_once($folder_include . "/head.php"); ?>
 <?php
 require_once($folder_include . "/navbar.php");
 // paginazione
-$paginationNumber = 5; // TODO rendere configurabile
+$paginationNumber = 15;
+if(isLogged()) {
+    $paginationNumber = $setting_numElemsPerPage;
+}
+
 $stmt = $dbconn->prepare("SELECT max(id) as maxid FROM $table_usercontent ORDER BY id DESC LIMIT 1");
 $stmt->execute();
 $esito = $stmt->get_result();
@@ -25,6 +29,7 @@ if(!isset($_GET["id"])) {
 }
 $pagPrev = $maxid + $paginationNumber;
 $pagNext = $maxid - $paginationNumber;
+// fine paginazione
 
 // ottengo tutti i contenuti degli utenti pubblici
 $stmt = $dbconn->prepare("SELECT $table_usercontent.*, $table_users.username FROM $table_usercontent JOIN $table_users ON $table_usercontent.userid = $table_users.id WHERE $table_usercontent.id <= ? AND $table_usercontent.private = 0 ORDER BY id DESC LIMIT ?");

@@ -11,7 +11,7 @@ if(isset($_GET["deleteimg"]) && $_GET["deleteimg"] == "1") {
     $stmt->bind_param("i", $id);
     $stmt->execute();
 
-    deleteAvatar($avataruri);
+    deleteAvatarFile($avataruri);
 
     $_SESSION["avatarUri"] = $defaultavatar_file;
     $avataruri = $defaultavatar_file;
@@ -38,7 +38,7 @@ if (!is_uploaded_file($imagetemp)) {
 $filename =  $id . "." . $imageextension;
 
 if($filename != $avataruri) { // se cambia il nome del file devo eliminare quello vecchio
-    deleteAvatar($avataruri);
+    deleteAvatarFile($avataruri);
 }
 
 if (!move_uploaded_file($imagetemp, "../" . $folder_avatars . "/" . $filename)) {

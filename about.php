@@ -25,7 +25,7 @@ require_once($folder_include . "/navbar.php");
                 questi ultimi di pubblicare le loro creazioni e ricevere feedback dagli altri utenti. Il vantaggio di
                 questo servizio è la gamma di contenuti che possono essere pubblicati, come:
                 <strong>foto, video, dipinti, musica, testi e poesie</strong>. Questo progetto implementa anche un sistema
-                stile community come i like/dislike, commenti e amicizie.
+                stile community come i "mi piace" / "non mi piace", commenti e amicizie.
             </p>
             <h2>Spiegazione sezioni</h2>
             <h3>🌍 Esplora (<small>Visibile a tutti 🔓</small>)</h3>
@@ -53,6 +53,7 @@ require_once($folder_include . "/navbar.php");
                 <li>Visualizzare info generali sul proprio profilo</li>
                 <li>Visitare e aggiornare la propria pagina pubblica (vedere sotto per altri dettagli)</li>
                 <li>Cambiare la propria password</li>
+                <li>Cambiare il numero di elementi visibili in una singola pagina nella home</li>
                 <li>Cambiare la visibilità della propria pagina</li>
                 <li>Eliminare il proprio account</li>
             </ul>
@@ -68,7 +69,9 @@ require_once($folder_include . "/navbar.php");
             <p>
                 Ogni utente possiede una pagina pubblica dove può scrivere quello che desidera, rispettando i Termini di
                 Servizio. Questa schermata può essere pubblica o privata in base a se l'utente ha scelto
-                di mantenerla pubblica o metterla privata. Questa preferenza è specificabile dal proprio profilo.
+                di mantenerla pubblica o metterla privata. Questa preferenza è specificabile dal proprio profilo. E' possibile
+                anche vedere i contenuti pubblici e privati (se si è amici) dell'utente di cui si sta vedendo la pagina.
+                Infine, si può decidere di mettere "mi piace" / "non mi piace" per dare feedback all'utente.
             </p>
             <h3>📃 Pagina del contenuto (<small>Visibile a tutti 🔓</small>)</h3>
             <p>

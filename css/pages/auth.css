@@ -13,6 +13,8 @@
     background-repeat: no-repeat;
     background-position: center;
     transition: background-image 1s linear;
+
+    background-image: url('../../media/auth1.webp');
 }
 
 #auth_grid_container > div {

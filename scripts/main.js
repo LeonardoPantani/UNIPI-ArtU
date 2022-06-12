@@ -10,8 +10,8 @@ const options = {
     second: "2-digit"
 };
 
-function logout(destination = "./backend/logout.php") {
-    if (confirm("Sicuri di voler effettuare il logout?")) {
+function logout(forced = false, destination = "./backend/logout.php") {
+    if (forced || confirm("Sicuri di voler effettuare il logout?")) {
         redirect(destination);
     }
 }

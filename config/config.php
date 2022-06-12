@@ -4,16 +4,17 @@
  */
 $service_name = "ArtU";
 $service_motto = "Fai qualcosa di straordinario";
-$service_version = "20220611";
+$service_version = "20220612";
 $defaultavatar_file = "default.jpg";
 $defaultcontent_file = "default.jpg";
 
-$debug_mode = true; // se vero ignora la password al login
+$debug_mode = false; // se vero ignora la password al login
+$error_reporting = 0; // se 0 non mostra errori di nessun tipo
 
 $db_host = "localhost";
 $db_username = "root";
 $db_password = "";
-$db_dbname = "esame";
+$db_dbname = "Pantani_ArtU";
 
 $table_users = "users";
 $table_usercontent = "usercontent";
@@ -31,18 +32,20 @@ $folder_css = "css";
 $folder_scripts = "scripts";
 $folder_media = "media";
 
-$username_regex = '^\w{6,20}$';
+$username_regex = '^\w{6,20}$'; // regex per l'username, accetta tutte le words (parole) tra i 6 e i 20 caratteri
 $password_minlength = 6;
+
+$validPaginationNumbers = [5, 15, 30, 50, 100]; // numeri validi elementi di ogni pagina
 
 $time_between_publications = 0; // in secondi, tempo minimo tra una pubblicazione e l'altra
 
 $time_between_comments = 0; // in secondi, tempo minimo tra un commento e l'altro
 
-$content_index_note_maxlength = 150;
+$explore_note_maxlength = 150; // massima lunghezza delle note
 
-$content_page_maxlength = 5000;
-$content_text_view_maxlength = 3000;
-$comment_maxlength = 500;
+$content_page_maxlength = 5000; // lunghezza massima pagina pubblica di ogni utente
+$content_text_view_maxlength = 3000; // lunghezza massima di testo visibile nella pagina view.php
+$comment_maxlength = 500; // lunghezza massima di un commento
 
 // massimi tag 30, lunghezza totale singolo tag 20, con aggiunto virgola e spazio 22, totale: 660 caratteri possibili (700 nel database per sicurezza)
 $content_tag_maxlength = 20;
